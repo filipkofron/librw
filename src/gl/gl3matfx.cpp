@@ -24,8 +24,10 @@ namespace gl3 {
 
 #ifdef RW_OPENGL
 
+#ifdef PGM_PIPELINE
 static Shader *envShader, *envShader_noAT;
 static Shader *envShader_fullLight, *envShader_fullLight_noAT;
+#endif // PGM_PIPELINE
 static int32 u_texMatrix;
 static int32 u_fxparams;
 static int32 u_colorClamp;
@@ -43,6 +45,7 @@ matfxDefaultRender(InstanceDataHeader *header, InstanceData *inst, int32 vsBits,
 
 	rw::SetRenderState(VERTEXALPHA, inst->vertexAlpha || m->color.alpha != 0xFF);
 
+#ifdef PGM_PIPELINE
 	if((vsBits & VSLIGHT_MASK) == 0){
 		if(getAlphaTest())
 			defaultShader->use();
@@ -54,6 +57,7 @@ matfxDefaultRender(InstanceDataHeader *header, InstanceData *inst, int32 vsBits,
 		else
 			defaultShader_fullLight_noAT->use();
 	}
+#endif // PGM_PIPELINE
 
 	drawInst(header, inst);
 }
@@ -132,6 +136,7 @@ matfxEnvRender(InstanceDataHeader *header, InstanceData *inst, int32 vsBits, uin
 	rw::SetRenderState(VERTEXALPHA, 1);
 	rw::SetRenderState(SRCBLEND, BLENDONE);
 
+#ifdef PGM_PIPELINE
 	if((vsBits & VSLIGHT_MASK) == 0){
 		if(getAlphaTest())
 			envShader->use();
@@ -143,6 +148,7 @@ matfxEnvRender(InstanceDataHeader *header, InstanceData *inst, int32 vsBits, uin
 		else
 			envShader_fullLight_noAT->use();
 	}
+#endif // PGM_PIPELINE
 
 	drawInst(header, inst);
 
@@ -198,6 +204,7 @@ matfxOpen(void *o, int32, int32)
 {
 	matFXGlobals.pipelines[PLATFORM_GL3] = makeMatFXPipeline();
 
+#ifdef PGM_PIPELINE
 #include "shaders/matfx_gl.inc"
 	const char *vs[] = { shaderDecl, header_vert_src, matfx_env_vert_src, nil };
 	const char *vs_fullLight[] = { shaderDecl, "#define DIRECTIONALS\n#define POINTLIGHTS\n#define SPOTLIGHTS\n", header_vert_src, matfx_env_vert_src, nil };
@@ -213,6 +220,7 @@ matfxOpen(void *o, int32, int32)
 	assert(envShader_fullLight);
 	envShader_fullLight_noAT = Shader::create(vs_fullLight, fs_noAT);
 	assert(envShader_fullLight_noAT);
+#endif // PGM_PIPELINE
 
 	return o;
 }
@@ -222,7 +230,7 @@ matfxClose(void *o, int32, int32)
 {
 	((ObjPipeline*)matFXGlobals.pipelines[PLATFORM_GL3])->destroy();
 	matFXGlobals.pipelines[PLATFORM_GL3] = nil;
-
+#ifdef PGM_PIPELINE
 	envShader->destroy();
 	envShader = nil;
 	envShader_noAT->destroy();
@@ -231,6 +239,7 @@ matfxClose(void *o, int32, int32)
 	envShader_fullLight = nil;
 	envShader_fullLight_noAT->destroy();
 	envShader_fullLight_noAT = nil;
+#endif // PGM_PIPELINE
 
 	return o;
 }

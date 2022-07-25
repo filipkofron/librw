@@ -70,7 +70,8 @@ BMPheader::write(Stream *stream)
 Image*
 readBMP(const char *filename)
 {
-	ASSERTLITTLE;
+	// ASSERTLITTLE;
+	printf("[KFX] readBMP '%s' TODO: fix native\n", filename);
 	Image *image;
 	uint32 length;
 	uint8 *data;

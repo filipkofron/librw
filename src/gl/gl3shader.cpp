@@ -116,6 +116,7 @@ setUniform(int32 id, void *data)
 void
 flushUniforms(void)
 {
+#ifdef PGM_PIPELINE
 	for(int i = 0; i < uniformRegistry.numUniforms; i++){
 		// this is bad!
 		if(i >= currentShader->numUniforms){
@@ -144,6 +145,7 @@ flushUniforms(void)
 			}
 		currentShader->serialNums[i] = u->serialNum;
 	}
+#endif
 }
 
 Shader *currentShader;
@@ -173,6 +175,7 @@ printShaderSource(const char **src)
 static int
 compileshader(GLenum type, const char **src, GLuint *shader)
 {
+#ifdef PGM_PIPELINE
 	GLint n;
 	GLint shdr, success;
 	GLint len;
@@ -196,12 +199,14 @@ compileshader(GLenum type, const char **src, GLuint *shader)
 		return 1;
 	}
 	*shader = shdr;
+#endif
 	return 0;
 }
 
 static int
 linkprogram(GLint vs, GLint fs, GLuint *program)
 {
+#ifdef PGM_PIPELINE
 	GLint prog, success;
 	GLint len;
 	char *log;
@@ -233,12 +238,14 @@ linkprogram(GLint vs, GLint fs, GLuint *program)
 		return 1;
 	}
 	*program = prog;
+#endif
 	return 0;
 }
 
 Shader*
 Shader::create(const char **vsrc, const char **fsrc)
 {
+#ifdef PGM_PIPELINE
 	GLuint vs, fs, program;
 	int i;
 	int fail;
@@ -322,24 +329,31 @@ Shader::create(const char **vsrc, const char **fsrc)
 	// reset program
 	if(currentShader)
 		glUseProgram(currentShader->program);
-
+	
 	return sh;
+#else // PGM_PIPELINE
+return nullptr;
+#endif // PGM_PIPELINE
 }
 
 void
 Shader::use(void)
 {
+#ifdef PGM_PIPELINE
 	if(currentShader != this){
 		glUseProgram(this->program);
 		currentShader = this;
 	}
+#endif
 }
 
 void
 Shader::destroy(void)
 {
+#ifdef PGM_PIPELINE
 	glDeleteProgram(this->program);
 	rwFree(this->uniformLocations);
+#endif
 	rwFree(this);
 }
 

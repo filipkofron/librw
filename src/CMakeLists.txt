@@ -78,9 +78,36 @@ add_library(librw
     gl/rwgl3shader.h
     gl/rwwdgl.h
     gl/wdgl.cpp
-    gl/glad/glad.h
-    gl/glad/glad.c
-    gl/glad/khrplatform.h
+#    gl/glad/glad.h
+#    gl/glad/glad.c
+#    gl/glad/khrplatform.h
+    gl/glad/include/glad/gl.h
+    gl/glad/include/KHR/khrplatform.h
+    gl/glad/src/gl.c
+
+    gl1/gl1.cpp
+    gl1/gl1device.cpp
+    gl1/gl1immed.cpp
+    gl1/gl1matfx.cpp
+    gl1/gl1pipe.cpp
+    gl1/gl1raster.cpp
+    gl1/gl1render.cpp
+    gl1/gl1shader.cpp
+    gl1/gl1skin.cpp
+    gl1/rwgl1.h
+    gl1/rwgl1impl.h
+    gl1/rwgl1plg.h
+    gl1/rwgl1shader.h
+    gl1/rwwdgl.h
+    gl1/wdgl.cpp
+#    gl1/glad/glad.h
+#    gl1/glad/glad.c
+#    gl1/glad/khrplatform.h
+    gl1/glad/include/glad/gl.h
+    gl1/glad/include/KHR/khrplatform.h
+    gl1/glad/src/gl.c
+
+
 
     lodepng/lodepng.h
     lodepng/lodepng.cpp
@@ -101,6 +128,7 @@ target_include_directories(librw
     INTERFACE
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:${LIBRW_INSTALL_INCLUDEDIR}>
+        gl/glad/include
 )
 
 target_compile_definitions(librw
@@ -148,7 +176,22 @@ set_target_properties(librw
         PREFIX ""
 )
 
-if(LIBRW_PLATFORM_GL3)
+if(LIBRW_PLATFORM_GL1)
+    if (LIBRW_GL1_GFXLIB STREQUAL "GLFW")
+        find_package(glfw3 REQUIRED)
+        target_link_libraries(librw
+            PUBLIC
+                glfw
+            )
+    elseif (LIBRW_GL1_GFXLIB STREQUAL "SDL2")
+        find_package(SDL2 REQUIRED)
+        target_compile_definitions(librw PUBLIC LIBRW_SDL2)
+        target_link_libraries(librw
+            PUBLIC
+                SDL2::SDL2
+        )
+    endif()
+elseif(LIBRW_PLATFORM_GL3)
     if (LIBRW_GL3_GFXLIB STREQUAL "GLFW")
         find_package(glfw3 REQUIRED)
         target_link_libraries(librw
@@ -236,6 +279,15 @@ if(LIBRW_INSTALL)
             gl/rwgl3plg.h
             gl/rwgl3shader.h
         DESTINATION "${LIBRW_INSTALL_INCLUDEDIR}/src/gl"
+    )
+
+    install(
+        FILES
+            gl1/rwwdgl.h
+            gl1/rwgl1.h
+            gl1/rwgl1plg.h
+            gl1/rwgl1shader.h
+        DESTINATION "${LIBRW_INSTALL_INCLUDEDIR}/src/gl1"
     )
 
     install(

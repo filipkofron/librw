@@ -22,3 +22,9 @@ ps2
 
 BUGS:
 	- fseek with negative offset on ps2 over ps2link messes up the current position
+
+
+big-endian:
+ - collision
+ - ReadDataFromFile
+ - LoadSaveDataBlockNoCheck

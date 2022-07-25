@@ -16,6 +16,7 @@
 #include "d3d/rwd3d8.h"
 #include "d3d/rwd3d9.h"
 #include "d3d/rwd3dimpl.h"
+#include "gl1/rwgl1.h"
 #include "gl/rwgl3.h"
 
 #define PLUGIN_ID 0
@@ -306,6 +307,7 @@ defaultFindCB(const char *name)
 	if(TEXTUREGLOBAL(currentTexDict))
 		return TEXTUREGLOBAL(currentTexDict)->find(name);
 	// TODO: RW searches *all* TXDs otherwise
+	printf("[KFX]: Could not find '%s' texture\n", name);
 	return nil;
 }
 
@@ -317,15 +319,19 @@ defaultReadCB(const char *name, const char *mask)
 	Image *img;
 
 	img = Image::readMasked(name, mask);
-	if(img){
+	if(img)
+	{
 		tex = Texture::create(Raster::createFromImage(img));
 		strncpy(tex->name, name, 32);
 		if(mask)
 			strncpy(tex->mask, mask, 32);
 		img->destroy();
 		return tex;
-	}else
+	}
+	else {
+		printf("[KFX]: Could not find '%s' texture with mask '%s'\n", name, mask);
 		return nil;
+	}
 }
 
 Texture*

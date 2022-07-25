@@ -139,6 +139,9 @@ rasterCreateTexture(Raster *raster)
 static Raster*
 rasterCreateCameraTexture(Raster *raster)
 {
+#ifndef PGM_PIPELINE
+	return nil;
+#endif // PGM_PIPELINE
 	if(raster->format & (Raster::PAL4 | Raster::PAL8)){
 		RWERROR((ERR_NOTEXTURE));
 		return nil;
@@ -196,11 +199,12 @@ rasterCreateCameraTexture(Raster *raster)
 
 	bindTexture(prev);
 
-
+#ifdef PGM_PIPELINE
 	glGenFramebuffers(1, &natras->fbo);
 	bindFramebuffer(natras->fbo);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, natras->texid, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, natras->texid, 0)
 	bindFramebuffer(0);
+#endif // PGM_PIPELINE
 	natras->fboMate = nil;
 
 	return raster;
@@ -236,12 +240,15 @@ rasterCreateZbuffer(Raster *raster)
 	Gl3Raster *natras = GETGL3RASTEREXT(raster);
 
 	if(gl3Caps.gles){
+#ifdef PGM_PIPELINE
 		// have to use RBO on GLES!!
 		glGenRenderbuffers(1, &natras->texid);
 		glBindRenderbuffer(GL_RENDERBUFFER, natras->texid);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, raster->width, raster->height);
+#endif // PGM_PIPELINE
 	}else{
 		// TODO: set/check width, height, depth, format?
+#ifdef PGM_PIPELINE
 		natras->internalFormat = GL_DEPTH_STENCIL;
 		natras->format = GL_DEPTH_STENCIL;
 		natras->type = GL_UNSIGNED_INT_24_8;
@@ -259,6 +266,7 @@ rasterCreateZbuffer(Raster *raster)
 		natras->maxAnisotropy = 1;
 
 		bindTexture(prev);
+#endif // PGM_PIPELINE
 	}
 	natras->fbo = 0;
 	natras->fboMate = nil;
@@ -476,6 +484,7 @@ rasterLock(Raster *raster, int32 level, int32 lockMode)
 					bindTexture(prev);
 				}
 			}else if(gl3Caps.gles){
+#ifdef PGM_PIPELINE
 				GLuint fbo;
 				glGenFramebuffers(1, &fbo);
 				bindFramebuffer(fbo);
@@ -486,6 +495,7 @@ assert(natras->format == GL_RGBA);
 //e = glGetError(); printf("GL err4 %x (%x)\n", e, natras->format);
 				bindFramebuffer(0);
 				glDeleteFramebuffers(1, &fbo);
+#endif // PGM_PIPELINE
 			}else{
 				uint32 prev = bindTexture(natras->texid);
 				glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -555,8 +565,10 @@ rasterUnlock(Raster *raster, int32 level)
 					     raster->width, raster->height,
 					     0, natras->format, natras->type, raster->pixels);
 			}
+#ifdef PGM_PIPELINE
 			if(level == 0 && natras->autogenMipmap)
 				glGenerateMipmap(GL_TEXTURE_2D);
+#endif // PGM_PIPELINE
 			bindTexture(prev);
 		}
 		break;
@@ -837,7 +849,9 @@ destroyNativeRaster(void *object, int32 offset, int32)
 			zras->fboMate = nil;
 			natras->fboMate = nil;
 		}
+#ifdef PGM_PIPELINE
 		glDeleteFramebuffers(1, &natras->fbo);
+#endif // PGM_PIPELINE
 		glDeleteTextures(1, &natras->texid);
 		break;
 
@@ -846,15 +860,23 @@ destroyNativeRaster(void *object, int32 offset, int32)
 			// Detatch from FBO we may be attached to
 			Gl3Raster *oldfb = GETGL3RASTEREXT(natras->fboMate);
 			if(oldfb->fbo){
+#ifdef PGM_PIPELINE
 				bindFramebuffer(oldfb->fbo);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+#endif // PGM_PIPELINE
 			}
 			oldfb->fboMate = nil;
 		}
 		if(gl3Caps.gles)
+		{
+#ifdef PGM_PIPELINE
 			glDeleteRenderbuffers(1, &natras->texid);
+#endif // PGM_PIPELINE
+		}
 		else
+		{
 			glDeleteTextures(1, &natras->texid);
+		}
 		break;
 
 	case Raster::CAMERA:

@@ -14,7 +14,11 @@
 #include "rwwdgl.h"
 
 #ifdef RW_OPENGL
+#ifdef PGM_PIPELINE
 #include "glad/glad.h"
+#else // PGM_PIPELINE
+#include "glad/include/glad/gl.h"
+#endif // PGM_PIPELINE
 #endif
 
 #define PLUGIN_ID 2
@@ -113,10 +117,12 @@ setAttribPointers(InstanceDataHeader *inst)
 	};
 	for(int32 i = 0; i < inst->numAttribs; i++){
 		AttribDesc *a = &inst->attribs[i];
+#ifdef PGM_PIPELINE
 		glEnableVertexAttribArray(a->index);
 		glVertexAttribPointer(a->index, a->size, attribType[a->type],
 		                      a->normalized, a->stride,
 		                      (void*)(uint64)a->offset);
+#endif // PGM_PIPELINE
 	}
 }
 #endif

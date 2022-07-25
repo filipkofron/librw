@@ -996,15 +996,22 @@ Image::read(const char *imageName)
 	char *filename, *ext, *found;
 	Image *img;
 
+	//printf("[KFX] Image::read: '%s'\n", imageName);
+
 	filename = rwNewT(char, strlen(imageName) + 20, MEMDUR_FUNCTION | ID_IMAGE);
 	strcpy(filename, imageName);
 	ext = filename + strlen(filename);
 	*ext++ = '.';
+
 	// Try all supported extensions
 	for(i = 0; i < IMAGEGLOBAL(numFileFormats); i++){
 		if(IMAGEGLOBAL(fileFormats)[i].read == nil)
+		{
+			printf("[KFX] - [%i] IMAGEGLOBAL(fileFormats)[i].extension nil: '%s'\n", i, IMAGEGLOBAL(fileFormats)[i].extension);
 			continue;
+		}
 		strncpy(ext, IMAGEGLOBAL(fileFormats)[i].extension, 19);
+		//printf("[KFX] - [%i] find filename: '%s'\n", i, filename);
 		found = getFilename(filename);
 		// Found a file
 		if(found){
