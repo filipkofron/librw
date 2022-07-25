@@ -15,7 +15,6 @@
 #include "d3d/rwd3d.h"
 #include "d3d/rwd3d8.h"
 #include "d3d/rwd3d9.h"
-#include "gl1/rwgl1.h"
 #include "gl/rwgl3.h"
 #include "gl/rwwdgl.h"
 
@@ -260,8 +259,6 @@ Engine::open(EngineOpenParams *p)
 	// Device and possibly OS specific!
 #ifdef RW_PS2
 	engine->device = ps2::renderdevice;
-#elif RW_GL1
-	engine->device = gl1::renderdevice;
 #elif RW_GL3
 	engine->device = gl3::renderdevice;
 #elif RW_D3D9

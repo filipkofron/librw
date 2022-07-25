@@ -5,9 +5,6 @@ set(LIBRW_PLATFORMS "@LIBRW_PLATFORMS@")
 set(LIBRW_PLATFORM_@LIBRW_PLATFORM@ ON)
 
 if(LIBRW_PLATFORM_GL3)
-    set(LIBRW_GL1_GFXLIB "@LIBRW_GL1_GFXLIB@")
-    set(LIBRW_GL1_GFXLIBS "@LIBRW_GL1_GFXLIBS@")
-
     set(LIBRW_GL3_GFXLIB "@LIBRW_GL3_GFXLIB@")
     set(LIBRW_GL3_GFXLIBS "@LIBRW_GL3_GFXLIBS@")
 
@@ -20,12 +17,6 @@ if(LIBRW_PLATFORM_GL3)
     if(LIBRW_GL3_GFXLIB STREQUAL "GLFW")
         find_package(glfw3 REQUIRED)
     elseif(LIBRW_GL3_GFXLIB STREQUAL "SDL2")
-        find_package(SDL2 REQUIRED)
-    endif()
-
-    if(LIBRW_GL1_GFXLIB STREQUAL "GLFW")
-        find_package(glfw3 REQUIRED)
-    elseif(LIBRW_GL1_GFXLIB STREQUAL "SDL2")
         find_package(SDL2 REQUIRED)
     endif()
 endif()

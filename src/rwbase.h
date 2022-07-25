@@ -1,14 +1,3 @@
-// KFX Hax
-#ifndef RW_OPENGL
-#define RW_OPENGL
-#endif
-
-#ifndef RW_GL3
-#define RW_GL3
-#endif
-
-#define GL1_EXT
-
 #ifndef RW_PS2
 #include <stdint.h>
 #endif
@@ -22,13 +11,6 @@
 #ifdef RW_GL3
 #define RW_OPENGL
 #define RWDEVICE gl3
-// doesn't help
-//#define RW_GL_USE_VAOS
-#endif
-
-#ifdef RW_GL1
-#define RW_OPENGL1
-#define RWDEVICE gl1
 // doesn't help
 //#define RW_GL_USE_VAOS
 #endif
@@ -453,8 +435,6 @@ void memNative16_func(void *data, uint32 size);
 void memLittle32_func(void *data, uint32 size);
 void memLittle16_func(void *data, uint32 size);
 
-#define BIGENDIAN 1
-
 #ifdef BIGENDIAN
 inline void memNative32(void *data, uint32 size) { memNative32_func(data, size); }
 inline void memNative16(void *data, uint32 size) { memNative16_func(data, size); }
@@ -561,8 +541,6 @@ enum Platform
 	PLATFORM_WDGL = 11,	// WarDrum OpenGL
 	PLATFORM_GL3  = 12,	// my GL3 implementation
 
-	PLATFORM_GL1  = 13,	// my GL3 implementation
-
 	NUM_PLATFORMS,
 
 	FOURCC_PS2 = 0x00325350		// 'PS2\0'
@@ -635,7 +613,6 @@ enum PluginID
 	ID_RASTERD3D9    = MAKEPLUGINID(VEND_RASTER, PLATFORM_D3D9),
 	ID_RASTERWDGL    = MAKEPLUGINID(VEND_RASTER, PLATFORM_WDGL),
 	ID_RASTERGL3     = MAKEPLUGINID(VEND_RASTER, PLATFORM_GL3),
-	ID_RASTERGL1     = MAKEPLUGINID(VEND_RASTER, PLATFORM_GL1),
 
 	// anything driver/device related (only as allocation tag)
 	ID_DRIVER        = MAKEPLUGINID(VEND_DRIVER, 0)
@@ -729,7 +706,7 @@ struct ChunkHeaderInfo
 // TODO?: make these methods of ChunkHeaderInfo?
 bool writeChunkHeader(Stream *s, int32 type, int32 size);
 bool readChunkHeaderInfo(Stream *s, ChunkHeaderInfo *header);
-bool  findChunk(Stream *s, uint32 type, uint32 *length, uint32 *version);
+bool findChunk(Stream *s, uint32 type, uint32 *length, uint32 *version);
 
 int32 findPointer(void *p, void **list, int32 num);
 uint8 *getFileContents(const char *name, uint32 *len);

@@ -30,9 +30,7 @@ static int32 u_xform;
 #define STARTINDICES 10000
 #define STARTVERTICES 10000
 
-#ifdef PGM_PIPELINE
 static Shader *im2dShader;
-#endif // PGM_PIPELINE
 static AttribDesc im2dattribDesc[3] = {
 	{ ATTRIB_POS,        GL_FLOAT,         GL_FALSE, 4,
 		sizeof(Im2DVertex), 0 },
@@ -55,21 +53,15 @@ static int primTypeMap[] = {
 void
 openIm2D(void)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	// must already be registered by device. we just need the value
 	u_xform = registerUniform("u_xform", UNIFORM_VEC4);
 
-#ifdef PGM_PIPELINE
 #include "shaders/im2d_gl.inc"
 #include "shaders/simple_fs_gl.inc"
 	const char *vs[] = { shaderDecl, header_vert_src, im2d_vert_src, nil };
 	const char *fs[] = { shaderDecl, header_frag_src, simple_frag_src, nil };
 	im2dShader = Shader::create(vs, fs);
 	assert(im2dShader);
-#endif // PGM_PIPELINE
 
 	glGenBuffers(1, &im2DIbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, im2DIbo);
@@ -89,19 +81,13 @@ openIm2D(void)
 void
 closeIm2D(void)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	glDeleteBuffers(1, &im2DIbo);
 	glDeleteBuffers(1, &im2DVbo);
 #ifdef RW_GL_USE_VAOS
 	glDeleteVertexArrays(1, &im2DVao);
 #endif
-#ifdef PGM_PIPELINE
 	im2dShader->destroy();
 	im2dShader = nil;
-#endif // PGM_PIPELINE
 }
 
 static Im2DVertex tmpprimbuf[3];
@@ -109,10 +95,6 @@ static Im2DVertex tmpprimbuf[3];
 void
 im2DRenderLine(void *vertices, int32 numVertices, int32 vert1, int32 vert2)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	Im2DVertex *verts = (Im2DVertex*)vertices;
 	tmpprimbuf[0] = verts[vert1];
 	tmpprimbuf[1] = verts[vert2];
@@ -122,10 +104,6 @@ im2DRenderLine(void *vertices, int32 numVertices, int32 vert1, int32 vert2)
 void
 im2DRenderTriangle(void *vertices, int32 numVertices, int32 vert1, int32 vert2, int32 vert3)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	Im2DVertex *verts = (Im2DVertex*)vertices;
 	tmpprimbuf[0] = verts[vert1];
 	tmpprimbuf[1] = verts[vert2];
@@ -136,10 +114,6 @@ im2DRenderTriangle(void *vertices, int32 numVertices, int32 vert1, int32 vert2, 
 void
 im2DSetXform(void)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	GLfloat xform[4];
 	Camera *cam;
 	cam = (Camera*)engine->currentCamera;
@@ -154,10 +128,6 @@ im2DSetXform(void)
 void
 im2DRenderPrimitive(PrimitiveType primType, void *vertices, int32 numVertices)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 #ifdef RW_GL_USE_VAOS
 	glBindVertexArray(im2DVao);
 #endif
@@ -166,12 +136,10 @@ im2DRenderPrimitive(PrimitiveType primType, void *vertices, int32 numVertices)
 	glBufferData(GL_ARRAY_BUFFER, STARTVERTICES*sizeof(Im2DVertex), nil, GL_STREAM_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices*sizeof(Im2DVertex), vertices);
 
-#ifdef PGM_PIPELINE
 	if(im2dOverrideShader)
 		im2dOverrideShader->use();
 	else
 		im2dShader->use();
-#endif // PGM_PIPELINE
 #ifndef RW_GL_USE_VAOS
 	setAttribPointers(im2dattribDesc, 3);
 #endif
@@ -190,10 +158,6 @@ im2DRenderIndexedPrimitive(PrimitiveType primType,
 	void *vertices, int32 numVertices,
 	void *indices, int32 numIndices)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 #ifdef RW_GL_USE_VAOS
 	glBindVertexArray(im2DVao);
 #endif
@@ -206,12 +170,10 @@ im2DRenderIndexedPrimitive(PrimitiveType primType,
 	glBufferData(GL_ARRAY_BUFFER, STARTVERTICES*sizeof(Im2DVertex), nil, GL_STREAM_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices*sizeof(Im2DVertex), vertices);
 
-#ifdef PGM_PIPELINE
 	if(im2dOverrideShader)
 		im2dOverrideShader->use();
 	else
 		im2dShader->use();
-#endif // PGM_PIPELINE
 #ifndef RW_GL_USE_VAOS
 	setAttribPointers(im2dattribDesc, 3);
 #endif
@@ -229,9 +191,8 @@ im2DRenderIndexedPrimitive(PrimitiveType primType,
 
 // Im3D
 
-#ifdef PGM_PIPELINE
+
 static Shader *im3dShader;
-#endif // PGM_PIPELINE
 static AttribDesc im3dattribDesc[3] = {
 	{ ATTRIB_POS,        GL_FLOAT,         GL_FALSE, 3,
 		sizeof(Im3DVertex), 0 },
@@ -249,18 +210,12 @@ static int32 num3DVertices;	// not actually needed here
 void
 openIm3D(void)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
-#ifdef PGM_PIPELINE
 #include "shaders/im3d_gl.inc"
 #include "shaders/simple_fs_gl.inc"
 	const char *vs[] = { shaderDecl, header_vert_src, im3d_vert_src, nil };
 	const char *fs[] = { shaderDecl, header_frag_src, simple_frag_src, nil };
 	im3dShader = Shader::create(vs, fs);
 	assert(im3dShader);
-#endif // PGM_PIPELINE
 
 	glGenBuffers(1, &im3DIbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, im3DIbo);
@@ -280,37 +235,25 @@ openIm3D(void)
 void
 closeIm3D(void)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	glDeleteBuffers(1, &im3DIbo);
 	glDeleteBuffers(1, &im3DVbo);
 #ifdef RW_GL_USE_VAOS
 	glDeleteVertexArrays(1, &im3DVao);
 #endif
-#ifdef PGM_PIPELINE
 	im3dShader->destroy();
 	im3dShader = nil;
-#endif // PGM_PIPELINE
 }
 
 void
 im3DTransform(void *vertices, int32 numVertices, Matrix *world, uint32 flags)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	if(world == nil){
 		static Matrix ident;
 		ident.setIdentity();
 		world = &ident;
 	}
 	setWorldMatrix(world);
-#ifdef PGM_PIPELINE
 	im3dShader->use();
-#endif // PGM_PIPELINE
 
 	if((flags & im3d::VERTEXUV) == 0)
 		SetRenderStatePtr(TEXTURERASTER, nil);
@@ -331,10 +274,6 @@ im3DTransform(void *vertices, int32 numVertices, Matrix *world, uint32 flags)
 void
 im3DRenderPrimitive(PrimitiveType primType)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, im3DIbo);
 
 	flushCache();
@@ -344,10 +283,6 @@ im3DRenderPrimitive(PrimitiveType primType)
 void
 im3DRenderIndexedPrimitive(PrimitiveType primType, void *indices, int32 numIndices)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, im3DIbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, STARTINDICES*2, nil, GL_STREAM_DRAW);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, numIndices*2, indices);
@@ -360,10 +295,6 @@ im3DRenderIndexedPrimitive(PrimitiveType primType, void *indices, int32 numIndic
 void
 im3DEnd(void)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 #ifndef RW_GL_USE_VAOS
 	disableAttribPointers(im3dattribDesc, 3);
 #endif

@@ -14,7 +14,6 @@
 #include "d3d/rwxbox.h"
 //#include "d3d/rwd3d8.h"
 //#include "d3d/rwd3d9.h"
-#include "gl1/rwgl1.h"
 #include "gl/rwgl3.h"
 
 #define PLUGIN_ID 0

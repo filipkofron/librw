@@ -1,21 +1,5 @@
-// #define PGM_PIPELINE // OpenGL 2.+
-
-
-#ifndef PGM_PIPELINE
-#ifndef RW_GL3
-#define RW_GL3
-#endif
-#ifndef RW_OPENGL
-#define RW_OPENGL
-#endif
-#endif // PGM_PIPELINE
-
 #ifdef RW_GL3
-#ifdef PGM_PIPELINE
 #include "glad/glad.h"
-#else // PGM_PIPELINE
-#include "glad/include/glad/gl.h"
-#endif // PGM_PIPELINE
 #ifdef LIBRW_SDL2
 #include <SDL.h>
 #else

@@ -103,7 +103,7 @@ const char *shaderDecl310es =
 const char *shaderDecl;
 
 // this needs a define in the shaders as well!
-#define RW_GL_USE_UBOS
+//#define RW_GL_USE_UBOS
 
 static GLuint vao;
 #ifdef RW_GL_USE_UBOS
@@ -136,10 +136,8 @@ int32 u_lightColor;
 int32 u_matColor;
 int32 u_surfProps;
 
-#ifdef PGM_PIPELINE
 Shader *defaultShader, *defaultShader_noAT;
 Shader *defaultShader_fullLight, *defaultShader_fullLight_noAT;
-#endif // PGM_PIPELINE
 
 static bool32 stateDirty = 1;
 static bool32 sceneDirty = 1;
@@ -495,9 +493,7 @@ void
 bindFramebuffer(uint32 fbo)
 {
 	if(currentFramebuffer != fbo){
-#ifdef PGM_PIPELINE
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-#endif // PGM_PIPELINE
 		currentFramebuffer = fbo;
 	}
 }
@@ -1144,27 +1140,15 @@ flushCache(void)
 
 #else
 	if(objectDirty){
-#ifdef GL1_EXT
-		glBindBufferARB(GL_UNIFORM_BUFFER, ubo_object);
-		glBufferDataARB(GL_UNIFORM_BUFFER, sizeof(UniformObject), nil, GL_STREAM_DRAW);
-		glBufferDataARB(GL_UNIFORM_BUFFER, sizeof(UniformObject), &uniformObject, GL_STREAM_DRAW);
-#else // GL1_EXT
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo_object);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformObject), nil, GL_STREAM_DRAW);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformObject), &uniformObject, GL_STREAM_DRAW);
-#endif // GL1_EXT
 		objectDirty = 0;
 	}
 	if(sceneDirty){
-#ifdef GL1_EXT
-		glBindBufferARB(GL_UNIFORM_BUFFER, ubo_scene);
-		glBufferDataARB(GL_UNIFORM_BUFFER, sizeof(UniformScene), nil, GL_STREAM_DRAW);
-		glBufferDataARB(GL_UNIFORM_BUFFER, sizeof(UniformScene), &uniformScene, GL_STREAM_DRAW);
-#else // GL1_EXT
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo_scene);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformScene), nil, GL_STREAM_DRAW);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformScene), &uniformScene, GL_STREAM_DRAW);
-#endif // GL1_EXT
 		sceneDirty = 0;
 	}
 	if(stateDirty){
@@ -1218,31 +1202,25 @@ setFrameBuffer(Camera *cam)
 				// have to detatch from fbo first!
 				Gl3Raster *oldfb = PLUGINOFFSET(Gl3Raster, natzb->fboMate, nativeRasterOffset);
 				if(oldfb->fbo){
-#ifdef PGM_PIPELINE
 					bindFramebuffer(oldfb->fbo);
 					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
 					bindFramebuffer(natfb->fbo);
-#endif // PGM_PIPELINE
 				}
 				oldfb->fboMate = nil;
 			}
 			natfb->fboMate = zbuf;
 			natzb->fboMate = fbuf;
 			if(natfb->fbo){
-#ifdef PGM_PIPELINE
 				if(gl3Caps.gles)
 					glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, natzb->texid);
 				else
 					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, natzb->texid, 0);
-#endif // PGM_PIPELINE
 			}
 		}
 	}else{
 		// remove z-buffer
-#ifdef PGM_PIPELINE
 		if(natfb->fboMate && natfb->fbo)
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
-#endif // PGM_PIPELINE
 		natfb->fboMate = nil;
 	}
 }
@@ -1583,12 +1561,8 @@ startSDL2(void)
 	}
 	ctx = SDL_GL_CreateContext(win);
 
-#ifdef PGM_PIPELINE
 	if (!((gl3Caps.gles ? gladLoadGLES2Loader : gladLoadGLLoader) ((GLADloadproc) SDL_GL_GetProcAddress, gl3Caps.glversion)) ) {
-#else // PGM_PIPELINE
-	if (!(gladLoadGL((GLADloadfunc) SDL_GL_GetProcAddress, gl3Caps.glversion)) ) {
-#endif // PGM_PIPELINE
-		RWERROR((ERR_GENERAL, "gladLoadGL failed"));
+		RWERROR((ERR_GENERAL, "gladLoadGLLoader failed"));
 		SDL_GL_DeleteContext(ctx);
 		SDL_DestroyWindow(win);
 		return 0;
@@ -1705,9 +1679,8 @@ static struct {
 	int gl;
 	int major, minor;
 } profiles[] = {
-	{ GLFW_OPENGL_API, 1, 3 },
-	{ GLFW_OPENGL_API, 2, 1 },
 	{ GLFW_OPENGL_API, 3, 3 },
+	{ GLFW_OPENGL_API, 2, 1 },
 	{ GLFW_OPENGL_ES_API, 3, 1 },
 	{ GLFW_OPENGL_ES_API, 2, 0 },
 	{ 0, 0, 0 },
@@ -1755,12 +1728,8 @@ startGLFW(void)
 	glfwMakeContextCurrent(win);
 
 	/* Init GLAD */
-#ifdef PGM_PIPELINE
 	if (!((gl3Caps.gles ? gladLoadGLES2Loader : gladLoadGLLoader) ((GLADloadproc) glfwGetProcAddress, gl3Caps.glversion)) ) {
-#else // PGM_PIPELINE
-	if (!(gladLoadGL((GLADloadfunc) glfwGetProcAddress)) ) {
-#endif // PGM_PIPELINE
-		RWERROR((ERR_GENERAL, "gladLoadGL failed"));
+		RWERROR((ERR_GENERAL, "gladLoadGLLoader failed"));
 		glfwDestroyWindow(win);
 		return 0;
 	}
@@ -1803,13 +1772,8 @@ initOpenGL(void)
 //		printf("%d %s\n", i, ext);
 	}
 */
-#ifdef PGM_PIPELINE
 	gl3Caps.dxtSupported = !!GLAD_GL_EXT_texture_compression_s3tc;
 	gl3Caps.astcSupported = !!GLAD_GL_KHR_texture_compression_astc_ldr;
-#else // PGM_PIPELINE
-	gl3Caps.dxtSupported = false;
-	gl3Caps.astcSupported = false;
-#endif // PGM_PIPELINE
 
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &gl3Caps.maxAnisotropy);
 
@@ -1866,35 +1830,11 @@ initOpenGL(void)
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
 
 	if(gl3Caps.glversion >= 30){
-#ifdef PGM_PIPELINE
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
-#endif // PGM_PIPELINE
 	}
 
 #ifdef RW_GL_USE_UBOS
-#ifdef GL1_EXT
-	glGenBuffersARB(1, &ubo_state);
-	glBindBufferARB(GL_UNIFORM_BUFFER, ubo_state);
-	glBindBufferBase(GL_UNIFORM_BUFFER, gl3::findBlock("State"), ubo_state);
-	glBufferDataARB(GL_UNIFORM_BUFFER, sizeof(UniformState), &uniformState,
-	             GL_STREAM_DRAW);
-	glBindBufferARB(GL_UNIFORM_BUFFER, 0);
-
-	glGenBuffersARB(1, &ubo_scene);
-	glBindBufferARB(GL_UNIFORM_BUFFER, ubo_scene);
-	glBindBufferBase(GL_UNIFORM_BUFFER, gl3::findBlock("Scene"), ubo_scene);
-	glBufferDataARB(GL_UNIFORM_BUFFER, sizeof(UniformScene), &uniformScene,
-	             GL_STREAM_DRAW);
-	glBindBufferARB(GL_UNIFORM_BUFFER, 0);
-
-	glGenBuffersARB(1, &ubo_object);
-	glBindBufferARB(GL_UNIFORM_BUFFER, ubo_object);
-	glBindBufferBase(GL_UNIFORM_BUFFER, gl3::findBlock("Object"), ubo_object);
-	glBufferDataARB(GL_UNIFORM_BUFFER, sizeof(UniformObject), &uniformObject,
-	             GL_STREAM_DRAW);
-	glBindBufferARB(GL_UNIFORM_BUFFER, 0);
-#else // GL1_EXT
 	glGenBuffers(1, &ubo_state);
 	glBindBuffer(GL_UNIFORM_BUFFER, ubo_state);
 	glBindBufferBase(GL_UNIFORM_BUFFER, gl3::findBlock("State"), ubo_state);
@@ -1915,10 +1855,8 @@ initOpenGL(void)
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformObject), &uniformObject,
 	             GL_STREAM_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-#endif // GL1_EXT
 #endif
 
-#ifdef PGM_PIPELINE
 #include "shaders/default_vs_gl.inc"
 #include "shaders/simple_fs_gl.inc"
 	const char *vs[] = { shaderDecl, header_vert_src, default_vert_src, nil };
@@ -1935,7 +1873,6 @@ initOpenGL(void)
 	assert(defaultShader_fullLight);
 	defaultShader_fullLight_noAT = Shader::create(vs_fullLight, fs_noAT);
 	assert(defaultShader_fullLight_noAT);
-#endif // PGM_PIPELINE
 
 	openIm2D();
 	openIm3D();
@@ -1948,7 +1885,7 @@ termOpenGL(void)
 {
 	closeIm3D();
 	closeIm2D();
-#ifdef PGM_PIPELINE
+
 	defaultShader->destroy();
 	defaultShader = nil;
 	defaultShader_noAT->destroy();
@@ -1957,7 +1894,7 @@ termOpenGL(void)
 	defaultShader_fullLight = nil;
 	defaultShader_fullLight_noAT->destroy();
 	defaultShader_fullLight_noAT = nil;
-#endif // PGM_PIPELINE
+
 	glDeleteTextures(1, &whitetex);
 	whitetex = nil;
 
@@ -2101,10 +2038,8 @@ deviceSystemGLFW(DeviceReq req, void *arg, int32 n)
 
 	case DEVICEGETMAXMULTISAMPLINGLEVELS:
 		{
-			GLint maxSamples = 0;
-#ifdef PGM_PIPELINE
+			GLint maxSamples;
 			glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
-#endif // PGM_PIPELINE
 			if(maxSamples == 0)
 				return 1;
 			return maxSamples;

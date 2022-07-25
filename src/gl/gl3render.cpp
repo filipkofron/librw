@@ -76,28 +76,18 @@ setAttribPointers(AttribDesc *attribDescs, int32 numAttribs)
 {
 	AttribDesc *a;
 	for(a = attribDescs; a != &attribDescs[numAttribs]; a++){
-#ifdef PGM_PIPELINE
 		glEnableVertexAttribArray(a->index);
 		glVertexAttribPointer(a->index, a->size, a->type, a->normalized,
 		                      a->stride, (void*)(uint64)a->offset);
-#endif // PGM_PIPELINE
 	}
 }
 
 void
 disableAttribPointers(AttribDesc *attribDescs, int32 numAttribs)
 {
-#ifdef RW_GL_USE_UBOS
-#ifdef GL1_EXT
-	AttribDesc *a;
-	for(a = attribDescs; a != &attribDescs[numAttribs]; a++)
-		glDisableVertexAttribArrayARB(a->index);
-#else // GL1_EXT
 	AttribDesc *a;
 	for(a = attribDescs; a != &attribDescs[numAttribs]; a++)
 		glDisableVertexAttribArray(a->index);
-#endif // GL1_EXT
-#endif // RW_GL_USE_UBOS
 }
 
 void
@@ -106,16 +96,9 @@ setupVertexInput(InstanceDataHeader *header)
 #ifdef RW_GL_USE_VAOS
 	glBindVertexArray(header->vao);
 #else
-#ifdef RW_GL_USE_UBOS
-#ifdef GL1_EXT
-	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, header->ibo);
-	glBindBufferARB(GL_ARRAY_BUFFER, header->vbo);
-#else // GL1_EXT
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, header->ibo);
 	glBindBuffer(GL_ARRAY_BUFFER, header->vbo);
-#endif // GL1_EXT
 	setAttribPointers(header->attribDesc, header->numAttribs);
-#endif
 #endif
 }
 
@@ -175,7 +158,6 @@ defaultRenderCB(Atomic *atomic, InstanceDataHeader *header)
 
 		rw::SetRenderState(VERTEXALPHA, inst->vertexAlpha || m->color.alpha != 0xFF);
 
-#ifdef PGM_PIPELINE
 		if((vsBits & VSLIGHT_MASK) == 0){
 			if(getAlphaTest())
 				defaultShader->use();
@@ -187,7 +169,6 @@ defaultRenderCB(Atomic *atomic, InstanceDataHeader *header)
 			else
 				defaultShader_fullLight_noAT->use();
 		}
-#endif // PGM_PIPELINE
 
 		drawInst(header, inst);
 		inst++;

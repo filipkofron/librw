@@ -20,7 +20,6 @@
 #include "src/d3d/rwd3d8.h"
 #include "src/d3d/rwd3d9.h"
 #include "src/gl/rwwdgl.h"
-#include "src/gl1/rwgl1.h"
 #include "src/gl/rwgl3.h"
 #include "src/gl/rwgl3shader.h"
 #include "src/gl/rwgl3plg.h"

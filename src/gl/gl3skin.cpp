@@ -31,10 +31,6 @@ static int32 u_boneMatrices;
 void
 skinInstanceCB(Geometry *geo, InstanceDataHeader *header, bool32 reinstance)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	AttribDesc *attribs, *a;
 
 	bool isPrelit = !!(geo->flags & Geometry::PRELIT);
@@ -209,10 +205,6 @@ skinInstanceCB(Geometry *geo, InstanceDataHeader *header, bool32 reinstance)
 void
 skinUninstanceCB(Geometry *geo, InstanceDataHeader *header)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	assert(0 && "can't uninstance");
 }
 
@@ -221,10 +213,6 @@ static float skinMatrices[64*16];
 void
 uploadSkinMatrices(Atomic *a)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	int i;
 	Skin *skin = Skin::get(a->geometry);
 	Matrix *m = (Matrix*)skinMatrices;
@@ -263,10 +251,6 @@ uploadSkinMatrices(Atomic *a)
 void
 skinRenderCB(Atomic *atomic, InstanceDataHeader *header)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	Material *m;
 
 	uint32 flags = atomic->geometry->flags;
@@ -310,10 +294,6 @@ skinRenderCB(Atomic *atomic, InstanceDataHeader *header)
 static void*
 skinOpen(void *o, int32, int32)
 {
-#ifndef PGM_PIPELINE
- // hax
- return nullptr;
-#endif // PGM_PIPELINE 
 	skinGlobals.pipelines[PLATFORM_GL3] = makeSkinPipeline();
 
 #include "shaders/simple_fs_gl.inc"
@@ -339,10 +319,6 @@ skinOpen(void *o, int32, int32)
 static void*
 skinClose(void *o, int32, int32)
 {
-#ifndef PGM_PIPELINE
- // hax
- return nullptr;
-#endif // PGM_PIPELINE 
 	((ObjPipeline*)skinGlobals.pipelines[PLATFORM_GL3])->destroy();
 	skinGlobals.pipelines[PLATFORM_GL3] = nil;
 
@@ -361,10 +337,6 @@ skinClose(void *o, int32, int32)
 void
 initSkin(void)
 {
-#ifndef PGM_PIPELINE
- // hax
- return;
-#endif // PGM_PIPELINE 
 	u_boneMatrices = registerUniform("u_boneMatrices", UNIFORM_MAT4, 64);
 
 	Driver::registerPlugin(PLATFORM_GL3, 0, ID_SKIN,

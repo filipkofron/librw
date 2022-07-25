@@ -28,15 +28,8 @@ freeInstanceData(Geometry *geometry)
 		return;
 	InstanceDataHeader *header = (InstanceDataHeader*)geometry->instData;
 	geometry->instData = nil;
-#ifdef RW_GL_USE_UBOS
-#ifdef GL1_EXT
-	glDeleteBuffersARB(1, &header->ibo);
-	glDeleteBuffersARB(1, &header->vbo);
-#else // GL1_EXT
 	glDeleteBuffers(1, &header->ibo);
 	glDeleteBuffers(1, &header->vbo);
-#endif // GL1_EXT
-#endif
 #ifdef RW_GL_USE_VAOS
 	glDeleteBuffers(1, &header->vao);
 #endif
@@ -99,19 +92,10 @@ instanceMesh(rw::ObjPipeline *rwpipe, Geometry *geo)
 	glGenVertexArrays(1, &header->vao);
 	glBindVertexArray(header->vao);
 #endif
-#ifdef RW_GL_USE_UBOS
-#ifdef GL1_EXT
-	glGenBuffersARB(1, &header->ibo);
-	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, header->ibo);
-	glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, header->totalNumIndex*2,
-			header->indexBuffer, GL_STATIC_DRAW);
-#else // GL1_EXT
 	glGenBuffers(1, &header->ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, header->ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, header->totalNumIndex*2,
 			header->indexBuffer, GL_STATIC_DRAW);
-#endif // GL1_EXT
-#endif
 
 	return header;
 }
@@ -256,13 +240,7 @@ defaultInstanceCB(Geometry *geo, InstanceDataHeader *header, bool32 reinstance)
 		//
 		header->vertexBuffer = rwNewT(uint8, header->totalNumVertex*stride, MEMDUR_EVENT | ID_GEOMETRY);
 		assert(header->vbo == 0);
-#ifdef RW_GL_USE_UBOS
-#ifdef GL1_EXT
 		glGenBuffers(1, &header->vbo);
-#else // GL1_EXT
-		glGenBuffersARB(1, &header->vbo);
-#endif // GL1_EXT
-#endif
 	}
 
 	attribs = header->attribDesc;
@@ -322,17 +300,9 @@ defaultInstanceCB(Geometry *geo, InstanceDataHeader *header, bool32 reinstance)
 	glBindVertexArray(header->vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, header->ibo);
 #endif
-#ifdef RW_GL_USE_UBOS
-#ifdef GL1_EXT
-	glBindBufferARB(GL_ARRAY_BUFFER, header->vbo);
-	glBufferDataARB(GL_ARRAY_BUFFER, header->totalNumVertex*attribs[0].stride,
-	             header->vertexBuffer, GL_STATIC_DRAW);
-#else // GL1_EXT
 	glBindBuffer(GL_ARRAY_BUFFER, header->vbo);
 	glBufferData(GL_ARRAY_BUFFER, header->totalNumVertex*attribs[0].stride,
 	             header->vertexBuffer, GL_STATIC_DRAW);
-#endif // GL1_EXT
-#endif
 #ifdef RW_GL_USE_VAOS
 	setAttribPointers(header->attribDesc, header->numAttribs);
 	glBindVertexArray(0);
