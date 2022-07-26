@@ -1080,7 +1080,10 @@ findChunk(Stream *s, uint32 type, uint32 *length, uint32 *version)
 	ChunkHeaderInfo header;
 	while(readChunkHeaderInfo(s, &header)){
 		if(header.type == ID_NAOBJECT)
+		{
+			printf("[KFX] findChunk failed got header type ID_NAOBJECT\n");
 			return false;
+		}
 		if(header.type == type){
 			if(length)
 				*length = header.length;
@@ -1090,6 +1093,8 @@ findChunk(Stream *s, uint32 type, uint32 *length, uint32 *version)
 		}
 		s->seek(header.length);
 	}
+
+	printf("[KFX] findChunk failed to find type %u in stream %p\n", type, s);
 	return false;
 }
 

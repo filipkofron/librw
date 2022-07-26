@@ -970,6 +970,7 @@ Image::getFilename(const char *name)
 Image*
 Image::readMasked(const char *imageName, const char *maskName)
 {
+	//printf("[KFX] Image::readMasked: '%s', mask: '%s'\n", imageName, maskName);
 	Image *img, *mask;
 
 	img = read(imageName);
@@ -995,20 +996,24 @@ Image::read(const char *imageName)
 	int i;
 	char *filename, *ext, *found;
 	Image *img;
+	//printf("[KFX] Image::read: '%s'\n", imageName);
 
 	filename = rwNewT(char, strlen(imageName) + 20, MEMDUR_FUNCTION | ID_IMAGE);
 	strcpy(filename, imageName);
 	ext = filename + strlen(filename);
 	*ext++ = '.';
+	//printf("[KFX] - filename: '%s'\n", filename);
 	// Try all supported extensions
 	for(i = 0; i < IMAGEGLOBAL(numFileFormats); i++){
 		if(IMAGEGLOBAL(fileFormats)[i].read == nil)
 			continue;
 		strncpy(ext, IMAGEGLOBAL(fileFormats)[i].extension, 19);
 		found = getFilename(filename);
+		//printf("[KFX] - trying '%s' found '%s'\n", filename, found);
 		// Found a file
 		if(found){
 			img = IMAGEGLOBAL(fileFormats)[i].read(found);
+			//printf("[KFX] - IMAGEGLOBAL(fileFormats)[i].read(found): '%p'\n", img);
 			rwFree(found);
 			// It was a valid image of that format
 			if(img){
@@ -1017,6 +1022,7 @@ Image::read(const char *imageName)
 			}
 		}
 	}
+	printf("[KFX] - did not find an extensions!\n");
 	rwFree(filename);
 	return nil;
 }

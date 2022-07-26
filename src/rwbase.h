@@ -6,6 +6,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#define BIGENDIAN (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+
 // TODO: clean up the opengl defines
 //       and figure out what we even want here...
 #ifdef RW_GL3

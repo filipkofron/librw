@@ -313,10 +313,12 @@ defaultFindCB(const char *name)
 static Texture*
 defaultReadCB(const char *name, const char *mask)
 {
+	//printf("[KFX] defaultReadCB: '%s' mask: '%s'\n", name, mask);
 	Texture *tex;
 	Image *img;
 
 	img = Image::readMasked(name, mask);
+	//printf("[KFX] - Image::readMasked returned img: '%p'\n", img);
 	if(img){
 		tex = Texture::create(Raster::createFromImage(img));
 		strncpy(tex->name, name, 32);
@@ -331,12 +333,14 @@ defaultReadCB(const char *name, const char *mask)
 Texture*
 Texture::read(const char *name, const char *mask)
 {
+	//printf("[KFX] Texture::read: '%s' mask: '%s'\n", name, mask);
 	(void)mask;
 	Raster *raster = nil;
 	Texture *tex;
 
 	if(tex = Texture::findCB(name), tex){
 		tex->addRef();
+		//printf("[KFX] - Found in dictionary: %p\n", tex);
 		return tex;
 	}
 	if(TEXTUREGLOBAL(loadTextures)){
@@ -344,10 +348,13 @@ Texture::read(const char *name, const char *mask)
 		if(tex == nil)
 			goto dummytex;
 	}else dummytex: if(TEXTUREGLOBAL(makeDummies)){
-//printf("missing texture %s %s\n", name ? name : "", mask ? mask : "");
+		printf("[KFX] - missing texture %s %s\n", name ? name : "", mask ? mask : "");
 		tex = Texture::create(nil);
 		if(tex == nil)
+		{
+			printf("[KFX] - Failed to create texture\n");
 			return nil;
+		}
 		strncpy(tex->name, name, 32);
 		if(mask)
 			strncpy(tex->mask, mask, 32);

@@ -168,13 +168,20 @@ Raster::setFromImage(Image *image, int32 platform)
 Raster*
 Raster::createFromImage(Image *image, int32 platform)
 {
+	//printf("[KFX] Raster::createFromImage: %p platform: %i\n", image, platform);
 	Raster *raster;
 	int32 width, height, depth, format;
 	if(!imageFindRasterFormat(image, TEXTURE, &width, &height, &depth, &format, platform))
+	{
+		printf("[KFX] - Failed to find raster format\n");
 		return nil;
+	}
 	raster = Raster::create(width, height, depth, format, platform);
 	if(raster == nil)
+	{
+		printf("[KFX] - Failed create Raster\n");
 		return nil;
+	}
 	return raster->setFromImage(image, platform);
 }
 
