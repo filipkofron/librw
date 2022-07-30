@@ -120,14 +120,14 @@ endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     target_compile_options(librw
         PRIVATE
-            "-Wall"
+            #"-Wall"
     )
     if (NOT LIBRW_PLATFORM_PS2)
         target_compile_options(librw
             PRIVATE
-                "-Wextra"
-                "-Wdouble-promotion"
-                "-Wpedantic"
+                #"-Wextra"
+                #"-Wdouble-promotion"
+                #"-Wpedantic"
         )
     endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")

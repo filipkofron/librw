@@ -45,12 +45,7 @@ registerUniform(const char *name, UniformType type, int32 num)
 {
 	int i;
 	i = findUniform(name);
-	if(i >= 0){
-		Uniform *u = &uniformRegistry.uniforms[i];
-		assert(u->type == type);
-		assert(u->num == num);
-		return i;
-	}
+	if(i >= 0) return i;
 	// TODO: print error
 	if(uniformRegistry.numUniforms+1 >= MAX_UNIFORMS){
 		assert(0 && "no space for uniform");
@@ -198,6 +193,8 @@ compileshader(GLenum type, const char **src, GLuint *shader)
 		glGetShaderInfoLog(shdr, len, nil, log);
 		fprintf(stderr, "%s\n", log);
 		rwFree(log);
+		// TODO KFX: remove debug
+		abort();
 		return 1;
 	}
 	*shader = shdr;
@@ -235,6 +232,7 @@ linkprogram(GLint vs, GLint fs, GLuint *program)
 		glGetProgramInfoLog(prog, len, nil, log);
 		fprintf(stderr, "%s\n", log);
 		rwFree(log);
+		// TODO KFX: remove debug
 		return 1;
 	}
 	*program = prog;
@@ -345,7 +343,6 @@ Shader::destroy(void)
 {
 	glDeleteProgram(this->program);
 	rwFree(this->uniformLocations);
-	rwFree(this->serialNums);
 	rwFree(this);
 }
 

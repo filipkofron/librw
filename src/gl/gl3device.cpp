@@ -68,7 +68,6 @@ struct UniformObject
 };
 
 const char *shaderDecl120 =
-"#version 120\n"
 "#define GL2\n"
 "#define texture texture2D\n"
 "#define VSIN(index) attribute\n"
@@ -526,7 +525,7 @@ setFilterMode(uint32 stage, int32 filter, int32 maxAniso = 1)
 				setActiveTexture(stage);
 				if(natras->autogenMipmap || natras->numLevels > 1){
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterConvMap_MIP[filter]);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterConvMap_NoMIP[filter]);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterConvMap_MIP[filter]);
 				}else{
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterConvMap_NoMIP[filter]);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterConvMap_NoMIP[filter]);
@@ -627,7 +626,7 @@ setRasterStage(uint32 stage, Raster *raster)
 			if(natras->filterMode != filter){
 				if(natras->autogenMipmap || natras->numLevels > 1){
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterConvMap_MIP[filter]);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterConvMap_NoMIP[filter]);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterConvMap_MIP[filter]);
 				}else{
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterConvMap_NoMIP[filter]);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterConvMap_NoMIP[filter]);
@@ -657,18 +656,6 @@ setRasterStage(uint32 stage, Raster *raster)
 				}
 			}
 		}
-	}
-}
-
-void
-evictRaster(Raster *raster)
-{
-	int i;
-	for(i = 0; i < MAXNUMSTAGES; i++){
-		//assert(rwStateCache.texstage[i].raster != raster);
-		if(rwStateCache.texstage[i].raster != raster)
-			continue;
-		setRasterStage(i, nil);
 	}
 }
 
@@ -923,7 +910,6 @@ resetRenderState(void)
 	rwStateCache.alphaFunc = ALPHAGREATEREQUAL;
 	alphaFunc = 0;
 	alphaRef = 10.0f/255.0f;
-	uniformStateDirty[RWGL_ALPHAREF] = true;
 	uniformState.fogDisable = 1.0f;
 	uniformState.fogStart = 0.0f;
 	uniformState.fogEnd = 0.0f;
@@ -1655,6 +1641,8 @@ makeVideoModeList(void)
 static int
 openGLFW(EngineOpenParams *openparams)
 {
+	printf("KFX: openGLFW\n");
+
 	glGlobals.winWidth = openparams->width;
 	glGlobals.winHeight = openparams->height;
 	glGlobals.winTitle = openparams->windowtitle;
@@ -1662,15 +1650,19 @@ openGLFW(EngineOpenParams *openparams)
 
 	memset(&gl3Caps, 0, sizeof(gl3Caps));
 
+	printf("KFX: glfwInit\n");
 	/* Init GLFW */
 	if(!glfwInit()){
 		RWERROR((ERR_GENERAL, "glfwInit() failed"));
 		return 0;
 	}
 
+	printf("KFX: glfwGetMonitors\n");
 	glGlobals.monitor = glfwGetMonitors(&glGlobals.numMonitors)[0];
 
 	makeVideoModeList();
+
+	printf("KFX: openGLFW end\n");
 
 	return 1;
 }
@@ -1678,6 +1670,7 @@ openGLFW(EngineOpenParams *openparams)
 static int
 closeGLFW(void)
 {
+	printf("KFX: closeGLFW\n");
 	glfwTerminate();
 	return 1;
 }
@@ -1694,6 +1687,7 @@ static struct {
 } profiles[] = {
 	{ GLFW_OPENGL_API, 3, 3 },
 	{ GLFW_OPENGL_API, 2, 1 },
+	{ GLFW_OPENGL_API, 1, 5 },
 	{ GLFW_OPENGL_ES_API, 3, 1 },
 	{ GLFW_OPENGL_ES_API, 2, 0 },
 	{ 0, 0, 0 },
@@ -1909,7 +1903,7 @@ termOpenGL(void)
 	defaultShader_fullLight_noAT = nil;
 
 	glDeleteTextures(1, &whitetex);
-	whitetex = 0;
+	whitetex = nil;
 
 	return 1;
 }
@@ -1989,6 +1983,8 @@ deviceSystemSDL2(DeviceReq req, void *arg, int32 n)
 static int
 deviceSystemGLFW(DeviceReq req, void *arg, int32 n)
 {
+	printf("KFX: deviceSystemGLFW req: %i\n", int(req));
+
 	GLFWmonitor **monitors;
 	VideoMode *rwmode;
 
