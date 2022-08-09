@@ -50,7 +50,7 @@ struct UniformScene
 	float32 view[16];
 };
 
-#define MAX_LIGHTS 8
+#define MAX_LIGHTS 1
 
 struct UniformObject
 {

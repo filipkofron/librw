@@ -64,10 +64,10 @@ drawInst_GSemu(InstanceDataHeader *header, InstanceData *inst)
 void
 drawInst(InstanceDataHeader *header, InstanceData *inst)
 {
-	if(rw::GetRenderState(rw::GSALPHATEST))
+	/*if(rw::GetRenderState(rw::GSALPHATEST))
 		drawInst_GSemu(header, inst);
 	else
-		drawInst_simple(header, inst);
+		drawInst_simple(header, inst);*/
 }
 
 
