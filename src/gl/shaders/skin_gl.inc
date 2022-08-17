@@ -10,11 +10,11 @@ const char *skin_vert_src =
 "void\n"
 "main(void)\n"
 "{\n"
-"	vec3 SkinVertex = vec3(0.0, 0.0, 0.0);\n"
+"	/*vec3 SkinVertex = vec3(0.0, 0.0, 0.0);\n"
 "	vec3 SkinNormal = vec3(0.0, 0.0, 0.0);\n"
 "	for(int i = 0; i < 4; i++){\n"
 "		SkinVertex += (u_boneMatrices[int(in_indices[i])] * vec4(in_pos, 1.0)).xyz * in_weights[i];\n"
-"       mat4 boneMat = u_boneMatrices[int(in_indices[i])];"
+"		mat4 boneMat = u_boneMatrices[int(in_indices[i])];\n"
 "		SkinNormal += (mat3(boneMat[0].xyz, boneMat[1].xyz, boneMat[2].xyz) * in_normal) * in_weights[i];\n"
 "	}\n"
 
@@ -30,6 +30,14 @@ const char *skin_vert_src =
 "	v_color = clamp(v_color, 0.0, 1.0);\n"
 "	v_color *= u_matColor;\n"
 
-"	v_fog = DoFog(gl_Position.z);\n"
+"	v_fog = DoFog(gl_Position.z);*/\n"
+
+
+
+
+"	v_fog = 0.5f;\n"
+"	v_tex0 = vec2(0.5f, 0.5f);\n"
+"	v_color = vec4(1.0f, 0.0f, 1.0f, 0.0f);\n"
+"	gl_Position = vec4(in_pos, 1.0f);\n"
 "}\n"
 ;

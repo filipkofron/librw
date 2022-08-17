@@ -50,7 +50,7 @@ struct UniformScene
 	float32 view[16];
 };
 
-#define MAX_LIGHTS 1
+#define MAX_LIGHTS 8
 
 struct UniformObject
 {
@@ -660,6 +660,18 @@ setRasterStage(uint32 stage, Raster *raster)
 }
 
 void
+evictRaster(Raster *raster)
+{
+	int i;
+	for(i = 0; i < MAXNUMSTAGES; i++){
+		//assert(rwStateCache.texstage[i].raster != raster);
+		if(rwStateCache.texstage[i].raster != raster)
+			continue;
+		setRasterStage(i, nil);
+	}
+}
+
+void
 setTexture(int32 stage, Texture *tex)
 {
 	if(tex == nil || tex->raster == nil){
@@ -910,6 +922,7 @@ resetRenderState(void)
 	rwStateCache.alphaFunc = ALPHAGREATEREQUAL;
 	alphaFunc = 0;
 	alphaRef = 10.0f/255.0f;
+	uniformStateDirty[RWGL_ALPHAREF] = true;
 	uniformState.fogDisable = 1.0f;
 	uniformState.fogStart = 0.0f;
 	uniformState.fogEnd = 0.0f;

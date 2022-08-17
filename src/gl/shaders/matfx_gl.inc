@@ -15,7 +15,7 @@ const char *matfx_env_vert_src =
 "main(void)\n"
 "{\n"
 "	vec4 Vertex = u_world * vec4(in_pos, 1.0);\n"
-"	gl_Position = u_proj * u_view * Vertex;\n"
+"	/*gl_Position = u_proj * u_view * Vertex;\n"
 "	vec3 Normal = mat3(u_world[0].xyz, u_world[1].xyz, u_world[2].xyz) * in_normal;\n"
 
 "	v_tex0 = in_tex0;\n"
@@ -28,7 +28,14 @@ const char *matfx_env_vert_src =
 "	v_envColor = max(v_color, u_colorClamp) * u_envColor;\n"
 "	v_color *= u_matColor;\n"
 
-"	v_fog = DoFog(gl_Position.w);\n"
+"	v_fog = DoFog(gl_Position.w);*/\n"
+
+"	v_fog = 0.5f;\n"
+"	v_tex0 = vec2(0.5f, 0.5f);\n"
+"	v_tex1 = vec2(0.5f, 0.5f);\n"
+"	v_color = vec4(1.0f, 0.0f, 1.0f, 0.0f);\n"
+" 	v_envColor = vec4(1.0f, 0.0f, 1.0f, 0.0f);\n"
+"	gl_Position = u_proj * u_view * Vertex;\n"
 "}\n"
 ;
 const char *matfx_env_frag_src =

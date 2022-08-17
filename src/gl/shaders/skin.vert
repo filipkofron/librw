@@ -9,7 +9,7 @@ VSOUT float v_fog;
 void
 main(void)
 {
-	vec3 SkinVertex = vec3(0.0, 0.0, 0.0);
+	/*vec3 SkinVertex = vec3(0.0, 0.0, 0.0);
 	vec3 SkinNormal = vec3(0.0, 0.0, 0.0);
 	for(int i = 0; i < 4; i++){
 		SkinVertex += (u_boneMatrices[int(in_indices[i])] * vec4(in_pos, 1.0)).xyz * in_weights[i];
@@ -29,5 +29,13 @@ main(void)
 	v_color = clamp(v_color, 0.0, 1.0);
 	v_color *= u_matColor;
 
-	v_fog = DoFog(gl_Position.z);
+	v_fog = DoFog(gl_Position.z);*/
+
+
+
+
+	v_fog = 0.5f;
+	v_tex0 = vec2(0.5f, 0.5f);
+	v_color = vec4(1.0f, 0.0f, 1.0f, 0.0f);
+	gl_Position = vec4(in_pos, 1.0f);
 }
