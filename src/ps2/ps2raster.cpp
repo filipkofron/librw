@@ -924,7 +924,7 @@ rasterCreateTexture(Raster *raster)
 			uint32 b = nextaddress>>(11-3) & 7;	// upper three bits of block-in-page address
 			switch(psm){
 			case PSMCT32:
-			case PSMCT24:	
+			case PSMCT24:
 			case PSMT8:
 				b = blockOffset32_24_8[b];
 				break;
@@ -955,11 +955,11 @@ rasterCreateTexture(Raster *raster)
 		calcOffsets(width, height, psm, bufferBase, bufferWidth, trxpos_hi, &totalSize, &paletteBase);
 
 		ras->paletteSize = paletteWidth*paletteHeight*paletteDepth;
-		ras->miptbp1 = 
+		ras->miptbp1 =
 			  bufferWidth[1]<<14 | (bufferBase[1] & 0x3FFF)<<0
 			| bufferWidth[2]<<34 | (bufferBase[2] & 0x3FFF)<<20
 			| bufferWidth[3]<<54 | (bufferBase[3] & 0x3FFF)<<40;
-		ras->miptbp2 = 
+		ras->miptbp2 =
 			  bufferWidth[4]<<14 | (bufferBase[4] & 0x3FFF)<<0
 			| bufferWidth[5]<<34 | (bufferBase[5] & 0x3FFF)<<20
 			| bufferWidth[6]<<54 | (bufferBase[6] & 0x3FFF)<<40;

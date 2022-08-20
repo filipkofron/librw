@@ -62,7 +62,7 @@ printScreen(const char *s, float32 x, float32 y)
 		vert->setU(u+du, recipZ);
 		vert->setV(v, recipZ);
 		vert++;
-		
+
 		vert->setScreenX(x);
 		vert->setScreenY(y+curfont->glyphheight);
 		vert->setScreenZ(rw::im2d::GetNearZ());
@@ -93,7 +93,7 @@ printScreen(const char *s, float32 x, float32 y)
 		curVert += 4;
 		curIndex += 6;
 		x += curfont->glyphwidth+1;
-		
+
 		s++;
 	}
 

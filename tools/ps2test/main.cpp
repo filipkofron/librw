@@ -705,7 +705,7 @@ main()
 {
 	FlushCache(0);
 	if(!initrw()){
-		printf("init failed!\n");	
+		printf("init failed!\n");
 		for(;;);
 	}
 

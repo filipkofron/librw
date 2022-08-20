@@ -778,7 +778,7 @@ rasterToImage(Raster *raster)
 		RWERROR((ERR_INVRASTER));
 		return nil;
 	}
-		
+
 	uint8 *in, *out;
 	image = Image::create(raster->width, raster->height, depth);
 	image->allocate();

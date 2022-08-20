@@ -1310,7 +1310,7 @@ ColorQuant::matchImage(uint8 *dstPixels, uint32 dstStride, Image *img)
 				break;
 			default: assert(0 && "invalid depth");
 			}
-			
+
 			col.red = rgba[0];
 			col.green = rgba[1];
 			col.blue = rgba[2];

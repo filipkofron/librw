@@ -552,8 +552,8 @@ readNativeTexture(Stream *stream)
 	// Raster
 	uint32 format = stream->readU32();
 	bool32 hasAlpha = stream->readI32();
-	int32 width = stream->readU16();
-	int32 height = stream->readU16();
+	uint16 width = stream->readU16();
+	uint16 height = stream->readU16();
 	int32 depth = stream->readU8();
 	int32 numLevels = stream->readU8();
 	int32 type = stream->readU8();

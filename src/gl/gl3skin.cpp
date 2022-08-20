@@ -174,6 +174,15 @@ skinInstanceCB(Geometry *geo, InstanceDataHeader *header, bool32 reinstance)
 		for(a = attribs; a->index != ATTRIB_WEIGHTS; a++)
 			;
 		float *w = skin->weights;
+		V4d* weights = (V4d*)w;
+		for (int i = 0; i < header->totalNumVertex; i++)
+		{
+			printf("[KFX] weights[%i] %f, %f, %f, %f\n", i,
+				weights[i].x,
+				weights[i].y,
+				weights[i].z,
+				weights[i].w);
+		}
 		instV4d(VERT_FLOAT4, verts + a->offset,
 			(V4d*)w,
 			header->totalNumVertex, a->stride);
@@ -183,6 +192,16 @@ skinInstanceCB(Geometry *geo, InstanceDataHeader *header, bool32 reinstance)
 	if(!reinstance){
 		for(a = attribs; a->index != ATTRIB_INDICES; a++)
 			;
+
+		RGBA* indices = (RGBA*)skin->indices;
+		for (int i = 0; i < header->totalNumVertex; i++)
+		{
+			printf("[KFX] indices[%i] %i, %i, %i, %i\n", i,
+				indices[i].red,
+				indices[i].green,
+				indices[i].blue,
+				indices[i].alpha);
+		}
 		// not really colors of course but what the heck
 		instColor(VERT_RGBA, verts + a->offset,
 			  (RGBA*)skin->indices,
@@ -245,6 +264,29 @@ uploadSkinMatrices(Atomic *a)
 			m++;
 		}
 	}
+
+	// for(i = 0; i < skin->numBones; i++)
+	// {
+	// 	printf("[KFX] skinMatrices[%i]: [%f %f %f %f] [%f %f %f %f] [%f %f %f %f] [%f %f %f %f]\n", i,
+	// 		skinMatrices[i * 16 + 0],
+	// 		skinMatrices[i * 16 + 1],
+	// 		skinMatrices[i * 16 + 2],
+	// 		skinMatrices[i * 16 + 3],
+	// 		skinMatrices[i * 16 + 4],
+	// 		skinMatrices[i * 16 + 5],
+	// 		skinMatrices[i * 16 + 6],
+	// 		skinMatrices[i * 16 + 7],
+	// 		skinMatrices[i * 16 + 8],
+	// 		skinMatrices[i * 16 + 9],
+	// 		skinMatrices[i * 16 + 10],
+	// 		skinMatrices[i * 16 + 11],
+	// 		skinMatrices[i * 16 + 12],
+	// 		skinMatrices[i * 16 + 13],
+	// 		skinMatrices[i * 16 + 14],
+	// 		skinMatrices[i * 16 + 15]
+	// 	);
+	// }
+
 	setUniform(u_boneMatrices, skinMatrices);
 }
 

@@ -119,7 +119,7 @@ Geometry::unlock(void)
 {
 	if(this->meshHeader == nil)
 		this->buildMeshes();
-		
+
 }
 
 struct GeoStreamData
@@ -497,7 +497,7 @@ Geometry::generateTriangles(int8 *adc)
 static void
 dumpMesh(Mesh *m)
 {
-	for(uint32 i = 0; i < m->numIndices-2; i++) 
+	for(uint32 i = 0; i < m->numIndices-2; i++)
 //		if(i % 2)
 //			printf("%3d %3d %3d\n",
 //				m->indices[i+1],

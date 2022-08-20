@@ -18,7 +18,7 @@
 namespace rw {
 namespace gl3 {
 
-#define MAX_LIGHTS 
+#define MAX_LIGHTS
 
 void
 drawInst_simple(InstanceDataHeader *header, InstanceData *inst)
@@ -181,4 +181,3 @@ defaultRenderCB(Atomic *atomic, InstanceDataHeader *header)
 }
 
 #endif
-

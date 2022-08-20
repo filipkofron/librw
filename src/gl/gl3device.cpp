@@ -918,7 +918,7 @@ getRenderState(int32 state)
 
 static void
 resetRenderState(void)
-{	
+{
 	rwStateCache.alphaFunc = ALPHAGREATEREQUAL;
 	alphaFunc = 0;
 	alphaRef = 10.0f/255.0f;
@@ -1719,7 +1719,7 @@ startGLFW(void)
 	glfwWindowHint(GLFW_GREEN_BITS, mode->mode.greenBits);
 	glfwWindowHint(GLFW_BLUE_BITS, mode->mode.blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, mode->mode.refreshRate);
-	
+
 	// GLX will round up to 2x or 4x if you ask for multisampling on with 1 sample
 	// So only apply the SAMPLES hint if we actually want multisampling
 	if (glGlobals.numSamples > 1)
@@ -1996,8 +1996,6 @@ deviceSystemSDL2(DeviceReq req, void *arg, int32 n)
 static int
 deviceSystemGLFW(DeviceReq req, void *arg, int32 n)
 {
-	printf("KFX: deviceSystemGLFW req: %i\n", int(req));
-
 	GLFWmonitor **monitors;
 	VideoMode *rwmode;
 
@@ -2113,7 +2111,7 @@ Device renderdevice = {
 // urgh, probably should get rid of that eventually
 #include "rwgl3.h"
 namespace rw {
-namespace gl3 { 
+namespace gl3 {
 Gl3Caps gl3Caps;
 bool32 needToReadBackTextures;
 }

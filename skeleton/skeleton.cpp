@@ -117,7 +117,7 @@ CameraSize(Camera *cam, Rect *r, float viewWindow, float aspectRatio)
 		}else{
 			vw.x = viewWindow / ((float)r->h/r->w);
 			vw.y = viewWindow;
-		}		
+		}
 		cam->setViewWindow(&vw);
 	}
 }

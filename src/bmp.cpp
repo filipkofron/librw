@@ -182,7 +182,7 @@ readBMP(const char *filename)
 		file.seek(pad);
 	}
 
-	
+
 	file.close();
 	rwFree(data);
 	return image;
