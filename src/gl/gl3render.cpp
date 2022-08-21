@@ -102,7 +102,7 @@ void
 setupVertexInput(InstanceDataHeader *header)
 {
 #ifdef RW_GL_USE_VAOS
-	glBindVertexArray(header->vao);
+	glBindVertexArrayAPPLE(header->vao);
 #else
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, header->ibo);
 	glBindBuffer(GL_ARRAY_BUFFER, header->vbo);

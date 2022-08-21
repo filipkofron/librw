@@ -15,6 +15,11 @@
 #include "rwgl3impl.h"
 #include "rwgl3shader.h"
 
+// TODO KFX: VAOs seem to be borked here
+#ifdef RW_GL_USE_VAOS
+#undef RW_GL_USE_VAOS
+#endif
+
 namespace rw {
 namespace gl3 {
 
@@ -72,8 +77,8 @@ openIm2D(void)
 	glBufferData(GL_ARRAY_BUFFER, STARTVERTICES*sizeof(Im2DVertex), nil, GL_STREAM_DRAW);
 
 #ifdef RW_GL_USE_VAOS
-	glGenVertexArrays(1, &im2DVao);
-	glBindVertexArray(im2DVao);
+	glGenVertexArraysAPPLE(1, (GLuint*) &im2DVao);
+	glBindVertexArrayAPPLE(im2DVao);
 	setAttribPointers(im2dattribDesc, 3);
 #endif
 
@@ -86,7 +91,7 @@ closeIm2D(void)
 	glDeleteBuffers(1, (GLuint*) &im2DIbo);
 	glDeleteBuffers(1, (GLuint*) &im2DVbo);
 #ifdef RW_GL_USE_VAOS
-	glDeleteVertexArrays(1, &im2DVao);
+	glDeleteVertexArraysAPPLE(1, (GLuint*) &im2DVao);
 #endif
 	im2dShader->destroy();
 	im2dShader = nil;
@@ -133,7 +138,7 @@ void
 im2DRenderPrimitive(PrimitiveType primType, void *vertices, int32 numVertices)
 {
 #ifdef RW_GL_USE_VAOS
-	glBindVertexArray(im2DVao);
+	glBindVertexArrayAPPLE(im2DVao);
 #endif
 
 	glBindBuffer(GL_ARRAY_BUFFER, im2DVbo);
@@ -169,7 +174,7 @@ im2DRenderIndexedPrimitive(PrimitiveType primType,
 	void *indices, int32 numIndices)
 {
 #ifdef RW_GL_USE_VAOS
-	glBindVertexArray(im2DVao);
+	glBindVertexArrayAPPLE(im2DVao);
 #endif
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, im2DIbo);
@@ -243,8 +248,8 @@ openIm3D(void)
 	glBufferData(GL_ARRAY_BUFFER, STARTVERTICES*sizeof(Im3DVertex), nil, GL_STREAM_DRAW);
 
 #ifdef RW_GL_USE_VAOS
-	glGenVertexArrays(1, &im3DVao);
-	glBindVertexArray(im3DVao);
+	glGenVertexArraysAPPLE(1, (GLuint*) &im3DVao);
+	glBindVertexArrayAPPLE(im3DVao);
 	setAttribPointers(im3dattribDesc, 3);
 #endif
 
@@ -257,7 +262,7 @@ closeIm3D(void)
 	glDeleteBuffers(1, (GLuint*) &im3DIbo);
 	glDeleteBuffers(1, (GLuint*) &im3DVbo);
 #ifdef RW_GL_USE_VAOS
-	glDeleteVertexArrays(1, &im3DVao);
+	glDeleteVertexArraysAPPLE(1, (GLuint*) &im3DVao);
 #endif
 	im3dShader->destroy();
 	im3dShader = nil;
@@ -280,7 +285,7 @@ im3DTransform(void *vertices, int32 numVertices, Matrix *world, uint32 flags)
 		SetRenderStatePtr(TEXTURERASTER, nil);
 
 #ifdef RW_GL_USE_VAOS
-	glBindVertexArray(im2DVao);
+	glBindVertexArrayAPPLE(im2DVao);
 #endif
 
 	glBindBuffer(GL_ARRAY_BUFFER, im3DVbo);
