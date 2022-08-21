@@ -1,5 +1,6 @@
 #ifdef RW_GL3
-#include "glad/glad.h"
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
 #ifdef LIBRW_SDL2
 #include <SDL.h>
 #else
@@ -286,3 +287,27 @@ void registerNativeRaster(void);
 
 }
 }
+
+#include <iostream>
+#include <string>
+
+static void _check_gl_error(const char* file, int line, const char* func) {
+	GLenum err (glGetError());
+
+	while(err!=GL_NO_ERROR) {
+		std::string error;
+
+		switch(err) {
+			case GL_INVALID_OPERATION:      error="INVALID_OPERATION";      break;
+			case GL_INVALID_ENUM:           error="INVALID_ENUM";           break;
+			case GL_INVALID_VALUE:          error="INVALID_VALUE";          break;
+			case GL_OUT_OF_MEMORY:          error="OUT_OF_MEMORY";          break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION_EXT:  error="GL_INVALID_FRAMEBUFFER_OPERATION_EXT";  break;
+		}
+
+		std::cerr << "GL_" << error.c_str() <<" - "<<file<<":"<<line<<" @"<<func<<std::endl;
+		err=glGetError();
+	}
+}
+
+#define check_gl_error() _check_gl_error(__FILE__, __LINE__, __FUNCTION__)

@@ -63,11 +63,11 @@ openIm2D(void)
 	im2dShader = Shader::create(vs, fs);
 	assert(im2dShader);
 
-	glGenBuffers(1, &im2DIbo);
+	glGenBuffers(1, (GLuint*) &im2DIbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, im2DIbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, STARTINDICES*2, nil, GL_STREAM_DRAW);
 
-	glGenBuffers(1, &im2DVbo);
+	glGenBuffers(1, (GLuint*) &im2DVbo);
 	glBindBuffer(GL_ARRAY_BUFFER, im2DVbo);
 	glBufferData(GL_ARRAY_BUFFER, STARTVERTICES*sizeof(Im2DVertex), nil, GL_STREAM_DRAW);
 
@@ -76,18 +76,22 @@ openIm2D(void)
 	glBindVertexArray(im2DVao);
 	setAttribPointers(im2dattribDesc, 3);
 #endif
+
+	check_gl_error();
 }
 
 void
 closeIm2D(void)
 {
-	glDeleteBuffers(1, &im2DIbo);
-	glDeleteBuffers(1, &im2DVbo);
+	glDeleteBuffers(1, (GLuint*) &im2DIbo);
+	glDeleteBuffers(1, (GLuint*) &im2DVbo);
 #ifdef RW_GL_USE_VAOS
 	glDeleteVertexArrays(1, &im2DVao);
 #endif
 	im2dShader->destroy();
 	im2dShader = nil;
+
+	check_gl_error();
 }
 
 static Im2DVertex tmpprimbuf[3];
@@ -147,10 +151,16 @@ im2DRenderPrimitive(PrimitiveType primType, void *vertices, int32 numVertices)
 	im2DSetXform();
 
 	flushCache();
+
+	glClearColor(1, 0, 1, 1);
+	printf("[KFX] im2DRenderPrimitive glDrawArrays\n");
+
 	glDrawArrays(primTypeMap[primType], 0, numVertices);
 #ifndef RW_GL_USE_VAOS
 	disableAttribPointers(im2dattribDesc, 3);
 #endif
+
+	check_gl_error();
 }
 
 void
@@ -181,11 +191,18 @@ im2DRenderIndexedPrimitive(PrimitiveType primType,
 	im2DSetXform();
 
 	flushCache();
+
+	glClearColor(1, 0, 1, 1);
+	printf("[KFX] im2DRenderIndexedPrimitive glDrawElements\n");
+	check_gl_error();
+
 	glDrawElements(primTypeMap[primType], numIndices,
 	               GL_UNSIGNED_SHORT, nil);
 #ifndef RW_GL_USE_VAOS
 	disableAttribPointers(im2dattribDesc, 3);
 #endif
+
+	check_gl_error();
 }
 
 
@@ -217,11 +234,11 @@ openIm3D(void)
 	im3dShader = Shader::create(vs, fs);
 	assert(im3dShader);
 
-	glGenBuffers(1, &im3DIbo);
+	glGenBuffers(1, (GLuint*) &im3DIbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, im3DIbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, STARTINDICES*2, nil, GL_STREAM_DRAW);
 
-	glGenBuffers(1, &im3DVbo);
+	glGenBuffers(1, (GLuint*) &im3DVbo);
 	glBindBuffer(GL_ARRAY_BUFFER, im3DVbo);
 	glBufferData(GL_ARRAY_BUFFER, STARTVERTICES*sizeof(Im3DVertex), nil, GL_STREAM_DRAW);
 
@@ -230,18 +247,22 @@ openIm3D(void)
 	glBindVertexArray(im3DVao);
 	setAttribPointers(im3dattribDesc, 3);
 #endif
+
+	check_gl_error();
 }
 
 void
 closeIm3D(void)
 {
-	glDeleteBuffers(1, &im3DIbo);
-	glDeleteBuffers(1, &im3DVbo);
+	glDeleteBuffers(1, (GLuint*) &im3DIbo);
+	glDeleteBuffers(1, (GLuint*) &im3DVbo);
 #ifdef RW_GL_USE_VAOS
 	glDeleteVertexArrays(1, &im3DVao);
 #endif
 	im3dShader->destroy();
 	im3dShader = nil;
+
+	check_gl_error();
 }
 
 void
@@ -269,6 +290,8 @@ im3DTransform(void *vertices, int32 numVertices, Matrix *world, uint32 flags)
 	setAttribPointers(im3dattribDesc, 3);
 #endif
 	num3DVertices = numVertices;
+
+	check_gl_error();
 }
 
 void
@@ -277,7 +300,13 @@ im3DRenderPrimitive(PrimitiveType primType)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, im3DIbo);
 
 	flushCache();
+
+	glClearColor(1, 0, 1, 1);
+	printf("[KFX] im3DRenderPrimitive glDrawArrays\n");
+
 	glDrawArrays(primTypeMap[primType], 0, num3DVertices);
+
+	check_gl_error();
 }
 
 void
@@ -288,8 +317,14 @@ im3DRenderIndexedPrimitive(PrimitiveType primType, void *indices, int32 numIndic
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, numIndices*2, indices);
 
 	flushCache();
+
+	glClearColor(1, 0, 1, 1);
+	printf("[KFX] im3DRenderPrimitive glDrawElements\n");
+
 	glDrawElements(primTypeMap[primType], numIndices,
 	               GL_UNSIGNED_SHORT, nil);
+
+	check_gl_error();
 }
 
 void

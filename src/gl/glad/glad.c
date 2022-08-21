@@ -1295,7 +1295,7 @@ int gladLoadGLLoader(GLADloadproc load, int requestedVersion) {
 
 	load_GL_1_Extensions(load);
 
-	if (!find_extensionsGL()) return 0;
+	//if (!find_extensionsGL()) return 0;
 	load_GL_EXT_framebuffer_object(load);
 	load_GL_KHR_debug(load);
 	return GLVersion.major != 0 || GLVersion.minor != 0;

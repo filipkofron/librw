@@ -119,7 +119,7 @@ skinInstanceCB(Geometry *geo, InstanceDataHeader *header, bool32 reinstance)
 		//
 		header->vertexBuffer = rwNewT(uint8, header->totalNumVertex*stride, MEMDUR_EVENT | ID_GEOMETRY);
 		assert(header->vbo == 0);
-		glGenBuffers(1, &header->vbo);
+		glGenBuffers(1, (GLuint*)&header->vbo);
 	}
 
 	Skin *skin = Skin::get(geo);

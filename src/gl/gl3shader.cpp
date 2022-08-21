@@ -149,6 +149,7 @@ flushUniforms(void)
 			}
 		currentShader->serialNums[i] = u->serialNum;
 	}
+	check_gl_error();
 }
 
 Shader *currentShader;
@@ -203,6 +204,7 @@ compileshader(GLenum type, const char **src, GLuint *shader)
 		return 1;
 	}
 	*shader = shdr;
+	check_gl_error();
 	return 0;
 }
 
@@ -241,6 +243,8 @@ linkprogram(GLint vs, GLint fs, GLuint *program)
 		return 1;
 	}
 	*program = prog;
+
+	check_gl_error();
 	return 0;
 }
 
@@ -298,13 +302,14 @@ Shader::create(const char **vsrc, const char **fsrc)
 	printf("\n");
 #endif
 
-	// set uniform block binding
-	for(i = 0; i < uniformRegistry.numBlocks; i++){
-		int idx = glGetUniformBlockIndex(program,
-		                                 uniformRegistry.blockNames[i]);
-		if(idx >= 0)
-			glUniformBlockBinding(program, idx, i);
-	}
+	printf("[KFX] TODO This will probably bork\n");
+	// // set uniform block binding
+	// for(i = 0; i < uniformRegistry.numBlocks; i++){
+	// 	int idx = glGetUniformBlockIndex(program,
+	// 	                                 uniformRegistry.blockNames[i]);
+	// 	if(idx >= 0)
+	// 		glUniformBlockBinding(program, idx, i);
+	// }
 
 	// query uniform locations
 	sh->program = program;
@@ -331,6 +336,8 @@ Shader::create(const char **vsrc, const char **fsrc)
 	if(currentShader)
 		glUseProgram(currentShader->program);
 
+	check_gl_error();
+
 	return sh;
 }
 
@@ -340,6 +347,8 @@ Shader::use(void)
 	if(currentShader != this){
 		glUseProgram(this->program);
 		currentShader = this;
+
+		check_gl_error();
 	}
 }
 

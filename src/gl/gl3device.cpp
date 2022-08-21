@@ -484,6 +484,7 @@ bindTexture(uint32 texid)
 	if(prev != texid){
 		boundTexture[activeTexture] = texid;
 		glBindTexture(GL_TEXTURE_2D, texid);
+		check_gl_error();
 	}
 	return prev;
 }
@@ -492,7 +493,7 @@ void
 bindFramebuffer(uint32 fbo)
 {
 	if(currentFramebuffer != fbo){
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
 		currentFramebuffer = fbo;
 	}
 }
@@ -1215,7 +1216,7 @@ setFrameBuffer(Camera *cam)
 				Gl3Raster *oldfb = PLUGINOFFSET(Gl3Raster, natzb->fboMate, nativeRasterOffset);
 				if(oldfb->fbo){
 					bindFramebuffer(oldfb->fbo);
-					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+					glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_STENCIL_EXT, GL_TEXTURE_2D, 0, 0);
 					bindFramebuffer(natfb->fbo);
 				}
 				oldfb->fboMate = nil;
@@ -1224,15 +1225,15 @@ setFrameBuffer(Camera *cam)
 			natzb->fboMate = fbuf;
 			if(natfb->fbo){
 				if(gl3Caps.gles)
-					glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, natzb->texid);
+					glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_STENCIL_EXT, GL_RENDERBUFFER_EXT, natzb->texid);
 				else
-					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, natzb->texid, 0);
+					glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_STENCIL_EXT, GL_TEXTURE_2D, natzb->texid, 0);
 			}
 		}
 	}else{
 		// remove z-buffer
 		if(natfb->fboMate && natfb->fbo)
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_STENCIL_EXT, GL_TEXTURE_2D, 0, 0);
 		natfb->fboMate = nil;
 	}
 }
@@ -1698,9 +1699,9 @@ static struct {
 	int gl;
 	int major, minor;
 } profiles[] = {
-	{ GLFW_OPENGL_API, 3, 3 },
-	{ GLFW_OPENGL_API, 2, 1 },
 	{ GLFW_OPENGL_API, 1, 5 },
+	{ GLFW_OPENGL_API, 2, 1 },
+	{ GLFW_OPENGL_API, 3, 3 },
 	{ GLFW_OPENGL_ES_API, 3, 1 },
 	{ GLFW_OPENGL_ES_API, 2, 0 },
 	{ 0, 0, 0 },
@@ -1748,11 +1749,12 @@ startGLFW(void)
 	glfwMakeContextCurrent(win);
 
 	/* Init GLAD */
-	if (!((gl3Caps.gles ? gladLoadGLES2Loader : gladLoadGLLoader) ((GLADloadproc) glfwGetProcAddress, gl3Caps.glversion)) ) {
-		RWERROR((ERR_GENERAL, "gladLoadGLLoader failed"));
-		glfwDestroyWindow(win);
-		return 0;
-	}
+	// if (!((gl3Caps.gles ? gladLoadGLES2Loader : gladLoadGLLoader) ((GLADloadproc) glfwGetProcAddress, gl3Caps.glversion)) ) {
+	// 	RWERROR((ERR_GENERAL, "gladLoadGLLoader failed"));
+	// 	glfwDestroyWindow(win);
+	// 	return 0;
+	// }
+	gl3Caps.glversion = 1 * 10 + 5;
 
 	printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 
@@ -1792,10 +1794,11 @@ initOpenGL(void)
 //		printf("%d %s\n", i, ext);
 	}
 */
-	gl3Caps.dxtSupported = !!GLAD_GL_EXT_texture_compression_s3tc;
-	gl3Caps.astcSupported = !!GLAD_GL_KHR_texture_compression_astc_ldr;
+	gl3Caps.dxtSupported = false; // !!GLAD_GL_EXT_texture_compression_s3tc;
+	gl3Caps.astcSupported = false; // !!GLAD_GL_KHR_texture_compression_astc_ldr;
 
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &gl3Caps.maxAnisotropy);
+	check_gl_error();
 
 	if(gl3Caps.gles){
 		if(gl3Caps.glversion >= 30)
@@ -1845,14 +1848,18 @@ initOpenGL(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1,
 	             0, GL_RGBA, GL_UNSIGNED_BYTE, &whitepixel);
 
+	check_gl_error();
+
 	resetRenderState();
 
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
 
 	if(gl3Caps.glversion >= 30){
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
+		glGenVertexArraysAPPLE(1, (GLuint*) &vao);
+		glBindVertexArrayAPPLE(vao);
 	}
+
+	check_gl_error();
 
 #ifdef RW_GL_USE_UBOS
 	glGenBuffers(1, &ubo_state);
@@ -1877,6 +1884,8 @@ initOpenGL(void)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 #endif
 
+	check_gl_error();
+
 #include "shaders/default_vs_gl.inc"
 #include "shaders/simple_fs_gl.inc"
 	const char *vs[] = { shaderDecl, header_vert_src, default_vert_src, nil };
@@ -1896,6 +1905,8 @@ initOpenGL(void)
 
 	openIm2D();
 	openIm3D();
+
+	check_gl_error();
 
 	return 1;
 }
@@ -2058,8 +2069,9 @@ deviceSystemGLFW(DeviceReq req, void *arg, int32 n)
 
 	case DEVICEGETMAXMULTISAMPLINGLEVELS:
 		{
-			GLint maxSamples;
-			glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
+			GLint maxSamples = 1;
+			// TODO KFX
+			//glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
 			if(maxSamples == 0)
 				return 1;
 			return maxSamples;

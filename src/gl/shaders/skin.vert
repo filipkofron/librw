@@ -14,13 +14,13 @@ main(void)
 	for(int i = 0; i < 4; i++){
 		SkinVertex += (u_boneMatrices[int(in_indices[i])] * vec4(in_pos, 1.0)).xyz * in_weights[i];
 		//SkinVertex += vec4(in_pos, 1.0).xyz * in_weights[i];
-		SkinNormal += (u_boneMatrices[int(in_indices[i])] * vec4(in_normal, 0.0f)).xyz * in_weights[i];
+		SkinNormal += (u_boneMatrices[int(in_indices[i])] * vec4(in_normal, 0.0)).xyz * in_weights[i];
 	}
 
 	vec4 Vertex = u_world * vec4(SkinVertex, 1.0);
 	//vec4 Vertex = u_world * vec4(in_pos, 1.0);
 	gl_Position = u_proj * u_view * Vertex;
-	vec3 Normal = (u_world * vec4(SkinNormal, 0.0f)).xyz;
+	vec3 Normal = (u_world * vec4(SkinNormal, 0.0)).xyz;
 
 	v_tex0 = in_tex0;
 
@@ -35,7 +35,7 @@ main(void)
 
 
 
-	v_fog = 0.5f;
-	v_tex0 = vec2(0.5f, 0.5f);
-	v_color = vec4(1.0f, 0.0f, 1.0f, 0.0f);
+	v_fog = 0.5;
+	v_tex0 = vec2(0.5, 0.5);
+	v_color = vec4(1.0, 0.0, 1.0, 0.0);
 }

@@ -14,7 +14,8 @@
 #include "rwwdgl.h"
 
 #ifdef RW_OPENGL
-#include "glad/glad.h"
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
 #endif
 
 #define PLUGIN_ID 2
@@ -84,12 +85,12 @@ uploadGeo(Geometry *geo)
 	InstanceDataHeader *inst = (InstanceDataHeader*)geo->instData;
 	MeshHeader *meshHeader = geo->meshHeader;
 
-	glGenBuffers(1, &inst->vbo);
+	glGenBuffers(1, (GLuint*) &inst->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, inst->vbo);
 	glBufferData(GL_ARRAY_BUFFER, inst->dataSize,
 	             inst->data, GL_STATIC_DRAW);
 
-	glGenBuffers(1, &inst->ibo);
+	glGenBuffers(1, (GLuint*) &inst->ibo);
 	glBindBuffer(GL_ARRAY_BUFFER, inst->ibo);
 	glBufferData(GL_ARRAY_BUFFER, meshHeader->totalIndices*2,
 	             0, GL_STATIC_DRAW);

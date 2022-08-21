@@ -15,13 +15,13 @@ const char *skin_vert_src =
 "	for(int i = 0; i < 4; i++){\n"
 "		SkinVertex += (u_boneMatrices[int(in_indices[i])] * vec4(in_pos, 1.0)).xyz * in_weights[i];\n"
 "		//SkinVertex += vec4(in_pos, 1.0).xyz * in_weights[i];\n"
-"		SkinNormal += (u_boneMatrices[int(in_indices[i])] * vec4(in_normal, 0.0f)).xyz * in_weights[i];\n"
+"		SkinNormal += (u_boneMatrices[int(in_indices[i])] * vec4(in_normal, 0.0)).xyz * in_weights[i];\n"
 "	}\n"
 
 "	vec4 Vertex = u_world * vec4(SkinVertex, 1.0);\n"
 "	//vec4 Vertex = u_world * vec4(in_pos, 1.0);\n"
 "	gl_Position = u_proj * u_view * Vertex;\n"
-"	vec3 Normal = (u_world * vec4(SkinNormal, 0.0f)).xyz;\n"
+"	vec3 Normal = (u_world * vec4(SkinNormal, 0.0)).xyz;\n"
 
 "	v_tex0 = in_tex0;\n"
 
@@ -36,8 +36,8 @@ const char *skin_vert_src =
 
 
 
-"	v_fog = 0.5f;\n"
-"	v_tex0 = vec2(0.5f, 0.5f);\n"
-"	v_color = vec4(1.0f, 0.0f, 1.0f, 0.0f);\n"
+"	v_fog = 0.5;\n"
+"	v_tex0 = vec2(0.5, 0.5);\n"
+"	v_color = vec4(1.0, 0.0, 1.0, 0.0);\n"
 "}\n"
 ;

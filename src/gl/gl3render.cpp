@@ -24,8 +24,14 @@ void
 drawInst_simple(InstanceDataHeader *header, InstanceData *inst)
 {
 	flushCache();
+
+	printf("[KFX] glDrawElements %p\n", inst);
+	glClearColor(1, 0, 1, 1);
+
 	glDrawElements(header->primType, inst->numIndex,
 	               GL_UNSIGNED_SHORT, (void*)(uintptr)inst->offset);
+
+	check_gl_error();
 }
 
 // Emulate PS2 GS alpha test FB_ONLY case: failed alpha writes to frame- but not to depth buffer
@@ -88,6 +94,8 @@ disableAttribPointers(AttribDesc *attribDescs, int32 numAttribs)
 	AttribDesc *a;
 	for(a = attribDescs; a != &attribDescs[numAttribs]; a++)
 		glDisableVertexAttribArray(a->index);
+
+	check_gl_error();
 }
 
 void
@@ -100,6 +108,8 @@ setupVertexInput(InstanceDataHeader *header)
 	glBindBuffer(GL_ARRAY_BUFFER, header->vbo);
 	setAttribPointers(header->attribDesc, header->numAttribs);
 #endif
+
+	check_gl_error();
 }
 
 void
@@ -108,6 +118,8 @@ teardownVertexInput(InstanceDataHeader *header)
 #ifndef RW_GL_USE_VAOS
 	disableAttribPointers(header->attribDesc, header->numAttribs);
 #endif
+
+	check_gl_error();
 }
 
 int32
