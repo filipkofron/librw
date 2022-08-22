@@ -16,6 +16,7 @@
 #include "rwgl3shader.h"
 
 // TODO KFX: VAOs seem to be borked here
+#include <csignal>
 #ifdef RW_GL_USE_VAOS
 #undef RW_GL_USE_VAOS
 #endif
@@ -160,6 +161,10 @@ im2DRenderPrimitive(PrimitiveType primType, void *vertices, int32 numVertices)
 	glClearColor(1, 0, 1, 1);
 	printf("[KFX] im2DRenderPrimitive glDrawArrays\n");
 
+	// Generate an interrupt
+	// TODO KFX
+	std::raise(SIGINT);
+
 	glDrawArrays(primTypeMap[primType], 0, numVertices);
 #ifndef RW_GL_USE_VAOS
 	disableAttribPointers(im2dattribDesc, 3);
@@ -199,6 +204,11 @@ im2DRenderIndexedPrimitive(PrimitiveType primType,
 
 	glClearColor(1, 0, 1, 1);
 	printf("[KFX] im2DRenderIndexedPrimitive glDrawElements\n");
+
+	// Generate an interrupt
+	// TODO KFX
+	std::raise(SIGINT);
+
 	check_gl_error();
 
 	glDrawElements(primTypeMap[primType], numIndices,

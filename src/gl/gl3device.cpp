@@ -1274,6 +1274,7 @@ setViewport(Raster *frameBuffer)
 	Rect r = getFramebufferRect(frameBuffer);
 	if(r.w != glGlobals.presentWidth || r.h != glGlobals.presentHeight ||
 	   r.x != glGlobals.presentOffX || r.y != glGlobals.presentOffY){
+		printf("[KFX] setViewport: %i, %i, %i, %i\n", r.x, r.y, r.w, r.h);
 		glViewport(r.x, r.y, r.w, r.h);
 		glGlobals.presentWidth = r.w;
 		glGlobals.presentHeight = r.h;
@@ -1384,7 +1385,8 @@ clearCamera(Camera *cam, RGBA *col, uint32 mode)
 	}
 
 	convColor(&colf, col);
-	glClearColor(colf.red, colf.green, colf.blue, colf.alpha);
+	//glClearColor(colf.red, colf.green, colf.blue, colf.alpha);
+	glClearColor(1, 0, 1, 1);
 	mask = 0;
 	if(mode & Camera::CLEARIMAGE)
 		mask |= GL_COLOR_BUFFER_BIT;
@@ -1716,25 +1718,25 @@ startGLFW(void)
 	mode = &glGlobals.modes[glGlobals.currentMode];
 
 	glfwSetErrorCallback(glfwerr);
-	glfwWindowHint(GLFW_RED_BITS, mode->mode.redBits);
-	glfwWindowHint(GLFW_GREEN_BITS, mode->mode.greenBits);
-	glfwWindowHint(GLFW_BLUE_BITS, mode->mode.blueBits);
-	glfwWindowHint(GLFW_REFRESH_RATE, mode->mode.refreshRate);
+	// glfwWindowHint(GLFW_RED_BITS, mode->mode.redBits);
+	// glfwWindowHint(GLFW_GREEN_BITS, mode->mode.greenBits);
+	// glfwWindowHint(GLFW_BLUE_BITS, mode->mode.blueBits);
+	// glfwWindowHint(GLFW_REFRESH_RATE, mode->mode.refreshRate);
 
 	// GLX will round up to 2x or 4x if you ask for multisampling on with 1 sample
 	// So only apply the SAMPLES hint if we actually want multisampling
-	if (glGlobals.numSamples > 1)
-		glfwWindowHint(GLFW_SAMPLES, glGlobals.numSamples);
+	//if (glGlobals.numSamples > 1)
+		// glfwWindowHint(GLFW_SAMPLES, glGlobals.numSamples);
 
 	int i;
 	for(i = 0; profiles[i].gl; i++){
-		glfwWindowHint(GLFW_CLIENT_API, profiles[i].gl);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, profiles[i].major);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, profiles[i].minor);
+		// glfwWindowHint(GLFW_CLIENT_API, profiles[i].gl);
+		// glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, profiles[i].major);
+		// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, profiles[i].minor);
 
-		if(mode->flags & VIDEOMODEEXCLUSIVE)
-			win = glfwCreateWindow(mode->mode.width, mode->mode.height, glGlobals.winTitle, glGlobals.monitor, nil);
-		else
+		// if(mode->flags & VIDEOMODEEXCLUSIVE)
+		// 	win = glfwCreateWindow(mode->mode.width, mode->mode.height, glGlobals.winTitle, glGlobals.monitor, nil);
+		// else
 			win = glfwCreateWindow(glGlobals.winWidth, glGlobals.winHeight, glGlobals.winTitle, nil, nil);
 		if(win){
 			gl3Caps.gles = profiles[i].gl == GLFW_OPENGL_ES_API;

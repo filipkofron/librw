@@ -137,6 +137,13 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     )
 endif()
 
+target_compile_options(librw PRIVATE
+    "-ggdb"
+    "-gdwarf-2"
+    "-gstrict-dwarf"
+    "-rdynamic"
+)
+
 set_target_properties(librw
     PROPERTIES
         C_STANDARD 11
