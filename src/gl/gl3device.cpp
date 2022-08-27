@@ -16,6 +16,8 @@
 #include "rwgl3shader.h"
 #include "rwgl3impl.h"
 
+#include <csignal>
+
 #define PLUGIN_ID 0
 
 namespace rw {
@@ -919,7 +921,7 @@ getRenderState(int32 state)
 
 static void
 resetRenderState(void)
-{
+{	
 	rwStateCache.alphaFunc = ALPHAGREATEREQUAL;
 	alphaFunc = 0;
 	alphaRef = 10.0f/255.0f;
@@ -1274,7 +1276,6 @@ setViewport(Raster *frameBuffer)
 	Rect r = getFramebufferRect(frameBuffer);
 	if(r.w != glGlobals.presentWidth || r.h != glGlobals.presentHeight ||
 	   r.x != glGlobals.presentOffX || r.y != glGlobals.presentOffY){
-		printf("[KFX] setViewport: %i, %i, %i, %i\n", r.x, r.y, r.w, r.h);
 		glViewport(r.x, r.y, r.w, r.h);
 		glGlobals.presentWidth = r.w;
 		glGlobals.presentHeight = r.h;
@@ -1370,10 +1371,13 @@ endUpdate(Camera *cam)
 static void
 clearCamera(Camera *cam, RGBA *col, uint32 mode)
 {
+	//std::raise(SIGINT);
+
 	RGBAf colf;
 	GLbitfield mask;
 
 	setFrameBuffer(cam);
+	check_gl_error();
 
 	// make sure we're only clearing the part of the framebuffer
 	// that is subrastered
@@ -1383,23 +1387,42 @@ clearCamera(Camera *cam, RGBA *col, uint32 mode)
 		glScissor(r.x, r.y, r.w, r.h);
 		glEnable(GL_SCISSOR_TEST);
 	}
+	check_gl_error();
 
 	convColor(&colf, col);
-	//glClearColor(colf.red, colf.green, colf.blue, colf.alpha);
-	glClearColor(1, 0, 1, 1);
+	glClearColor(colf.red, colf.green, colf.blue, colf.alpha);
+
+	check_gl_error();
+
 	mask = 0;
 	if(mode & Camera::CLEARIMAGE)
-		mask |= GL_COLOR_BUFFER_BIT;
+	{
+		//printf("[KFX] ClearCamera HAX |= GL_COLOR_BUFFER_BIT\n");
+		//mask |= GL_COLOR_BUFFER_BIT;
+	}
 	if(mode & Camera::CLEARZ)
+	{
 		mask |= GL_DEPTH_BUFFER_BIT;
+	}
 	if(mode & Camera::CLEARSTENCIL)
+	{
 		mask |= GL_STENCIL_BUFFER_BIT;
+	}
+
+	check_gl_error();
+
 	glDepthMask(GL_TRUE);
+	check_gl_error();
 	glClear(mask);
+	check_gl_error();
 	glDepthMask(rwStateCache.zwrite);
+	check_gl_error();
 
 	if(setScissor)
+	{
 		glDisable(GL_SCISSOR_TEST);
+	}
+	check_gl_error();
 }
 
 static void
@@ -1651,6 +1674,15 @@ makeVideoModeList(void)
 			glGlobals.modes[i].mode.blueBits;
 		// set depth to power of two
 		for(glGlobals.modes[i].depth = 1; glGlobals.modes[i].depth < num; glGlobals.modes[i].depth <<= 1);
+
+		printf("[KFX] glfwGetVideoModes [%i]: %i, %i, d: %i r: %i g: %i b: %i \n",
+		i,
+			int(glGlobals.modes[i].mode.width),
+			int(glGlobals.modes[i].mode.height),
+			int(glGlobals.modes[i].depth),
+			int(glGlobals.modes[i].mode.redBits),
+			int(glGlobals.modes[i].mode.greenBits),
+			int(glGlobals.modes[i].mode.blueBits));
 	}
 }
 
@@ -1718,11 +1750,11 @@ startGLFW(void)
 	mode = &glGlobals.modes[glGlobals.currentMode];
 
 	glfwSetErrorCallback(glfwerr);
-	// glfwWindowHint(GLFW_RED_BITS, mode->mode.redBits);
-	// glfwWindowHint(GLFW_GREEN_BITS, mode->mode.greenBits);
-	// glfwWindowHint(GLFW_BLUE_BITS, mode->mode.blueBits);
-	// glfwWindowHint(GLFW_REFRESH_RATE, mode->mode.refreshRate);
-
+	glfwWindowHint(GLFW_RED_BITS, mode->mode.redBits);
+	glfwWindowHint(GLFW_GREEN_BITS, mode->mode.greenBits);
+	glfwWindowHint(GLFW_BLUE_BITS, mode->mode.blueBits);
+	glfwWindowHint(GLFW_REFRESH_RATE, mode->mode.refreshRate);
+	
 	// GLX will round up to 2x or 4x if you ask for multisampling on with 1 sample
 	// So only apply the SAMPLES hint if we actually want multisampling
 	//if (glGlobals.numSamples > 1)
@@ -1733,6 +1765,8 @@ startGLFW(void)
 		// glfwWindowHint(GLFW_CLIENT_API, profiles[i].gl);
 		// glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, profiles[i].major);
 		// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, profiles[i].minor);
+
+		printf("[KFX] glfwCreateWindow w: %i h: %i\n", int(glGlobals.winWidth), int(glGlobals.winHeight));
 
 		// if(mode->flags & VIDEOMODEEXCLUSIVE)
 		// 	win = glfwCreateWindow(mode->mode.width, mode->mode.height, glGlobals.winTitle, glGlobals.monitor, nil);
@@ -2125,7 +2159,7 @@ Device renderdevice = {
 // urgh, probably should get rid of that eventually
 #include "rwgl3.h"
 namespace rw {
-namespace gl3 {
+namespace gl3 { 
 Gl3Caps gl3Caps;
 bool32 needToReadBackTextures;
 }

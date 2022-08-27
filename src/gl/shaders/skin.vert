@@ -26,16 +26,9 @@ main(void)
 
 	v_color = in_color;
 	v_color.rgb += u_ambLight.rgb*surfAmbient;
-	//v_color.rgb += DoDynamicLight(Vertex.xyz, Normal)*surfDiffuse;
+	v_color.rgb += DoDynamicLight(Vertex.xyz, Normal)*surfDiffuse;
 	v_color = clamp(v_color, 0.0, 1.0);
 	v_color *= u_matColor;
 
-	//v_fog = DoFog(gl_Position.z);
-
-
-
-
-	v_fog = 0.5;
-	v_tex0 = vec2(0.5, 0.5);
-	v_color = vec4(1.0, 0.0, 1.0, 0.0);
+	v_fog = DoFog(gl_Position.z);
 }

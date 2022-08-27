@@ -258,6 +258,7 @@ rasterCreateZbuffer(Raster *raster)
 		glGenTextures(1, (GLuint*) &natras->texid);
 		check_gl_error();
 		uint32 prev = bindTexture(natras->texid);
+		printf("[KFX] rasterCreateZbuffer w: %i h: %i\n", raster->width, raster->height);
 		glTexImage2D(GL_TEXTURE_2D, 0, natras->internalFormat,
 			     raster->width, raster->height,
 			     0, natras->format, natras->type, nil);

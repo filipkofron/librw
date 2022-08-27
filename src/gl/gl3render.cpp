@@ -18,15 +18,12 @@
 namespace rw {
 namespace gl3 {
 
-#define MAX_LIGHTS
+#define MAX_LIGHTS 
 
 void
 drawInst_simple(InstanceDataHeader *header, InstanceData *inst)
 {
 	flushCache();
-
-	printf("[KFX] glDrawElements %p\n", inst);
-	glClearColor(1, 0, 1, 1);
 
 	glDrawElements(header->primType, inst->numIndex,
 	               GL_UNSIGNED_SHORT, (void*)(uintptr)inst->offset);
@@ -102,7 +99,7 @@ void
 setupVertexInput(InstanceDataHeader *header)
 {
 #ifdef RW_GL_USE_VAOS
-	glBindVertexArrayAPPLE(header->vao);
+	glBindVertexArray(header->vao);
 #else
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, header->ibo);
 	glBindBuffer(GL_ARRAY_BUFFER, header->vbo);
@@ -193,3 +190,4 @@ defaultRenderCB(Atomic *atomic, InstanceDataHeader *header)
 }
 
 #endif
+

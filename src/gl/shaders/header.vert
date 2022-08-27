@@ -79,7 +79,7 @@ uniform vec4 u_surfProps;	// amb, spec, diff, extra
 
 vec3 DoDynamicLight(vec3 V, vec3 N)
 {
-	vec3 color = vec3(0.0, 0.0, 0.0);
+	vec3 color = vec3(1.0, 1.0, 1.0);
 // 	for(int i = 0; i < MAX_LIGHTS; i++){
 // 		if(u_lightParams[i].x == 0.0)
 // 			break;

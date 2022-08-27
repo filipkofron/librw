@@ -161,7 +161,7 @@ ImGui_ImplRW_CreateFontsTexture()
 	g_FontTexture = rw::Texture::create(rw::Raster::createFromImage(image));
 	g_FontTexture->setFilter(rw::Texture::LINEAR);
 	image->destroy();
-
+	
 	// Store our identifier
 	io.Fonts->TexID = (void*)g_FontTexture;
 

@@ -80,7 +80,7 @@ const char *header_vert_src =
 
 "vec3 DoDynamicLight(vec3 V, vec3 N)\n"
 "{\n"
-"	vec3 color = vec3(0.0, 0.0, 0.0);\n"
+"	vec3 color = vec3(0.5, 0.5, 0.5);\n"
 "// 	for(int i = 0; i < MAX_LIGHTS; i++){\n"
 "// 		if(u_lightParams[i].x == 0.0)\n"
 "// 			break;\n"

@@ -16,7 +16,7 @@ const char *default_vert_src =
 
 "	v_color = in_color;\n"
 "	v_color.rgb += u_ambLight.rgb*surfAmbient;\n"
-"	//v_color.rgb += DoDynamicLight(Vertex.xyz, Normal)*surfDiffuse;\n"
+"	v_color.rgb += DoDynamicLight(Vertex.xyz, Normal)*surfDiffuse;\n"
 "	v_color = clamp(v_color, 0.0, 1.0);\n"
 "	v_color *= u_matColor;\n"
 
