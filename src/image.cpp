@@ -15,6 +15,8 @@
 #include "d3d/rwd3d8.h"
 #include "d3d/rwd3d9.h"
 
+#include <csignal>
+
 #define PLUGIN_ID ID_IMAGE
 
 namespace rw {
@@ -122,8 +124,12 @@ decompressDXT1(uint8 *adst, int32 w, int32 h, uint8 *src)
 	uint8 (*dst)[4] = (uint8(*)[4])adst;
 	for(int32 j = 0; j < w*h/2; j += 8){
 		/* calculate colors */
-		uint32 col0 = *((uint16*)&src[j+0]);
-		uint32 col1 = *((uint16*)&src[j+2]);
+		uint16 col0 = *((uint16*)&src[j+0]);
+		uint16 col1 = *((uint16*)&src[j+2]);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+		col0 = __builtin_bswap16(col0);
+		col1 = __builtin_bswap16(col1);
+#endif
 		c[0][0] = ((col0>>11) & 0x1F)*0xFF/0x1F;
 		c[0][1] = ((col0>> 5) & 0x3F)*0xFF/0x3F;
 		c[0][2] = ( col0      & 0x1F)*0xFF/0x1F;
@@ -157,6 +163,9 @@ decompressDXT1(uint8 *adst, int32 w, int32 h, uint8 *src)
 
 		/* make index list */
 		uint32 indices = *((uint32*)&src[j+4]);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+		indices = __builtin_bswap32(indices);
+#endif
 		for(int32 k = 0; k < 16; k++){
 			idx[k] = indices & 0x3;
 			indices >>= 2;
@@ -210,11 +219,17 @@ decompressDXT3(uint8 *adst, int32 w, int32 h, uint8 *src)
 
 		/* make index list */
 		uint32 indices = *((uint32*)&src[j+12]);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+		indices = __builtin_bswap32(indices);
+#endif
 		for(int32 k = 0; k < 16; k++){
 			idx[k] = indices & 0x3;
 			indices >>= 2;
 		}
 		uint64 alphas = *((uint64*)&src[j+0]);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+		alphas = __builtin_bswap64(alphas);
+#endif
 		for(int32 k = 0; k < 16; k++){
 			a[k] = (alphas & 0xF)*17;
 			alphas >>= 4;
@@ -239,6 +254,7 @@ decompressDXT3(uint8 *adst, int32 w, int32 h, uint8 *src)
 void
 decompressDXT5(uint8 *adst, int32 w, int32 h, uint8 *src)
 {
+	std::raise(SIGINT);
 	/* j loops through old texels
 	 * x and y loop through new texels */
 	int32 x = 0, y = 0;
